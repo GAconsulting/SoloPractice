@@ -18,7 +18,7 @@
             transition: max-height 0.3s ease-out;
         }
         .idea-list.open {
-            max-height: 200px; /* Adjust based on content height */
+            max-height: 200px;
         }
         .idea-item {
             cursor: pointer;
@@ -37,7 +37,7 @@
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
         <!-- Logo Section -->
         <div class="flex justify-center mb-6">
-            <img src="https://i.postimg.cc/597wphQ9/You-Tube-Logo-Solo-Practice-in-Soft-Greens-and-Taupes.png" alt="Solo Practice Logo" class="h-32 w-32 object-contain mx-auto">
+            <img src="https://i.postimg.cc/597wphQ9/You-Tube-Logo-Solo-Practice-in-Soft-Greens-and-Taupes.png" alt="Solo Practice Logo" class="h-48 w-48 object-contain mx-auto">
         </div>
 
         <h1 class="text-3xl font-bold text-center mb-2">Mission Statement Helper</h1>
@@ -45,10 +45,11 @@
             Answer a few simple questions to create a powerful mission statement for your practice.
         </p>
 
-        <!-- Input Form -->
-        <div class="space-y-6">
-            <!-- Target Audience -->
-            <div>
+        <!-- Question Cards & Navigation -->
+        <div id="questions-container" class="space-y-6">
+            <!-- Question 1: Target Audience -->
+            <div id="question-1" class="p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1">
+                <p class="text-xs text-gray-400 text-right mb-2">Question 1 of 4</p>
                 <label for="audience" class="block text-sm font-medium text-gray-700">Who do you serve?</label>
                 <div class="flex items-center mt-1">
                     <input type="text" id="audience" placeholder="e.g., busy professionals, new mothers, athletes" class="flex-grow rounded-md border-gray-300 shadow-sm p-3">
@@ -63,10 +64,16 @@
                     <div onclick="selectIdea('audience', 'Students')" class="idea-item">• Students</div>
                     <div onclick="selectIdea('audience', 'Artists')" class="idea-item">• Artists</div>
                 </div>
+                <div class="flex justify-end mt-4">
+                    <button onclick="nextQuestion(1)" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Next
+                    </button>
+                </div>
             </div>
 
-            <!-- Service -->
-            <div>
+            <!-- Question 2: Service -->
+            <div id="question-2" class="p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1 hidden">
+                <p class="text-xs text-gray-400 text-right mb-2">Question 2 of 4</p>
                 <label for="service" class="block text-sm font-medium text-gray-700">What specific service do you provide?</label>
                 <div class="flex items-center mt-1">
                     <input type="text" id="service" placeholder="e.g., custom facial treatments, therapeutic massage, career coaching" class="flex-grow rounded-md border-gray-300 shadow-sm p-3">
@@ -77,14 +84,23 @@
                 <div id="service-ideas" class="idea-list hidden mt-2 text-sm text-gray-500 pl-4 border-l-2 border-gray-300">
                     <div onclick="selectIdea('service', 'Custom facial treatments')" class="idea-item">• Custom facial treatments</div>
                     <div onclick="selectIdea('service', 'Therapeutic massage')" class="idea-item">• Therapeutic massage</div>
-                    <div onclick="selectIdea('service', 'Waxing services')" class="idea-item">• Waxing services</div>
-                    <div onclick="selectIdea('service', 'Nutrition coaching')" class="idea-item">• Nutrition coaching</div>
-                    <div onclick="selectIdea('service', 'Event planning')" class="idea-item">• Event planning</div>
+                    <div onclick="selectIdea('service', 'Advanced skin care treatments')" class="idea-item">• Advanced skin care treatments</div>
+                    <div onclick="selectIdea('service', 'Deep tissue massage')" class="idea-item">• Deep tissue massage</div>
+                    <div onclick="selectIdea('service', 'Body treatments')" class="idea-item">• Body treatments</div>
+                </div>
+                <div class="flex justify-between mt-4">
+                    <button onclick="prevQuestion(2)" class="text-gray-600 font-semibold py-2 px-4 rounded-full hover:underline transition-all duration-300 ease-in-out">
+                        Previous
+                    </button>
+                    <button onclick="nextQuestion(2)" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Next
+                    </button>
                 </div>
             </div>
 
-            <!-- Benefit -->
-            <div>
+            <!-- Question 3: Benefit -->
+            <div id="question-3" class="p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1 hidden">
+                <p class="text-xs text-gray-400 text-right mb-2">Question 3 of 4</p>
                 <label for="benefit" class="block text-sm font-medium text-gray-700">What is the result or benefit for them?</label>
                 <div class="flex items-center mt-1">
                     <input type="text" id="benefit" placeholder="e.g., glowing skin, deep relaxation, renewed confidence" class="flex-grow rounded-md border-gray-300 shadow-sm p-3">
@@ -99,10 +115,19 @@
                     <div onclick="selectIdea('benefit', 'Stress relief')" class="idea-item">• Stress relief</div>
                     <div onclick="selectIdea('benefit', 'Pain management')" class="idea-item">• Pain management</div>
                 </div>
+                <div class="flex justify-between mt-4">
+                    <button onclick="prevQuestion(3)" class="text-gray-600 font-semibold py-2 px-4 rounded-full hover:underline transition-all duration-300 ease-in-out">
+                        Previous
+                    </button>
+                    <button onclick="nextQuestion(3)" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Next
+                    </button>
+                </div>
             </div>
 
-            <!-- Core Value -->
-            <div>
+            <!-- Question 4: Core Value -->
+            <div id="question-4" class="p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1 hidden">
+                <p class="text-xs text-gray-400 text-right mb-2">Question 4 of 4</p>
                 <label for="core-value" class="block text-sm font-medium text-gray-700">What is your core value or belief?</label>
                 <div class="flex items-center mt-1">
                     <input type="text" id="core-value" placeholder="e.g., integrity, empathy, innovation" class="flex-grow rounded-md border-gray-300 shadow-sm p-3">
@@ -114,25 +139,26 @@
                     <div onclick="selectIdea('core-value', 'Integrity')" class="idea-item">• Integrity</div>
                     <div onclick="selectIdea('core-value', 'Empathy')" class="idea-item">• Empathy</div>
                     <div onclick="selectIdea('core-value', 'Compassion')" class="idea-item">• Compassion</div>
-                    <div onclick="selectIdea('core-value', 'Innovation')" class="idea-item">• Innovation</div>
-                    <div onclick="selectIdea('core-value', 'Education')" class="idea-item">• Education</div>
+                    <div onclick="selectIdea('core-value', 'Wellness')" class="idea-item">• Wellness</div>
+                    <div onclick="selectIdea('core-value', 'Personalization')" class="idea-item">• Personalization</div>
+                </div>
+                <div class="flex justify-between mt-4">
+                    <button onclick="prevQuestion(4)" class="text-gray-600 font-semibold py-2 px-4 rounded-full hover:underline transition-all duration-300 ease-in-out">
+                        Previous
+                    </button>
+                    <button onclick="generateStatements()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Generate Mission Statements
+                    </button>
                 </div>
             </div>
         </div>
-
-        <!-- Call to Action -->
-        <div class="mt-6">
-            <button onclick="generateStatements()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
-                Generate My Mission Statements
-            </button>
-        </div>
         
         <!-- Generated Options Section -->
-        <div id="generated-options" class="mt-6 p-4 bg-gray-100 rounded-lg hidden">
+        <div id="generated-options" class="mt-6 space-y-4 hidden">
         </div>
 
         <!-- Final Statement & Save Section -->
-        <div id="edit-and-save-section" class="mt-6 p-4 bg-gray-100 rounded-lg hidden">
+        <div id="edit-and-save-section" class="mt-6 p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1 hidden">
             <h2 class="text-xl font-bold text-center mb-4">Edit & Save Your Final Statement</h2>
             <textarea id="final-statement" class="w-full h-32 p-3 rounded-md border-gray-300 shadow-sm text-gray-800"></textarea>
             <div class="mt-4">
@@ -160,6 +186,34 @@
     </div>
 
     <script>
+        let currentStep = 1;
+
+        const showStep = (step) => {
+            document.querySelectorAll('#questions-container > div').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(`question-${step}`).classList.remove('hidden');
+        };
+
+        const nextQuestion = (step) => {
+            const currentField = document.getElementById(document.querySelector(`#question-${step} input`).id);
+            if (step < 4 && currentField.value.trim() === '') {
+                const statusDiv = document.getElementById('status-message');
+                statusDiv.textContent = 'Please answer the current question before proceeding.';
+                statusDiv.className = 'text-center mt-4 text-red-500';
+                return;
+            }
+            currentStep = step + 1;
+            showStep(currentStep);
+            document.getElementById('status-message').textContent = '';
+        };
+
+        const prevQuestion = (step) => {
+            currentStep = step - 1;
+            showStep(currentStep);
+            document.getElementById('status-message').textContent = '';
+        };
+
         const toggleIdeas = (fieldId) => {
             const ideaList = document.getElementById(`${fieldId}-ideas`);
             ideaList.classList.toggle('open');
@@ -181,6 +235,7 @@
             const service = document.getElementById('service').value.trim();
             const benefit = document.getElementById('benefit').value.trim();
             const coreValue = document.getElementById('core-value').value.trim();
+            const formattedCoreValue = coreValue ? `, guided by our commitment to ${coreValue.toLowerCase()}` : '.';
 
             if (!audience || !service || !benefit) {
                 statusDiv.textContent = 'Please fill out the first three fields to generate statements.';
@@ -189,20 +244,28 @@
             }
 
             const statements = [
-                `Our mission is to empower ${audience} by providing ${service} so they can achieve ${benefit}. We do this by staying committed to ${coreValue || 'our core values'}.`,
-                `We exist to provide ${service} to ${audience}, helping them achieve ${benefit} through our commitment to ${coreValue || 'our core values'}.`,
-                `Dedicated to helping ${audience} find ${benefit}, we deliver ${service} with a core focus on ${coreValue || 'our core values'}.`
+                `To provide ${service.toLowerCase()} to ${audience.toLowerCase()} and help them achieve ${benefit.toLowerCase()}${formattedCoreValue}`,
+                `We are dedicated to helping ${audience.toLowerCase()} find ${benefit.toLowerCase()} by providing expert ${service.toLowerCase()}${formattedCoreValue}`,
+                `Our purpose is to empower ${audience.toLowerCase()} to experience ${benefit.toLowerCase()} through our exceptional ${service.toLowerCase()}${formattedCoreValue}`,
+                `We provide personalized ${service.toLowerCase()} to ${audience.toLowerCase()}, helping them achieve ${benefit.toLowerCase()} and overall wellness${formattedCoreValue}`,
+                `Committed to ${coreValue.toLowerCase()}, we offer a range of ${service.toLowerCase()} treatments to help ${audience.toLowerCase()} achieve ${benefit.toLowerCase()}`
             ];
+            
+            // Randomize the statements for a fresh look each time
+            statements.sort(() => 0.5 - Math.random());
+
+            const questionsContainer = document.getElementById('questions-container');
+            questionsContainer.classList.add('hidden');
 
             const generatedOptionsDiv = document.getElementById('generated-options');
             generatedOptionsDiv.innerHTML = `
                 <h2 class="text-xl font-bold text-center mb-4">Click a statement below to Edit & Save:</h2>
-            `; // Clear previous options and add new heading
+            `;
             generatedOptionsDiv.classList.remove('hidden');
 
             statements.forEach((statement, index) => {
                 const optionDiv = document.createElement('div');
-                optionDiv.className = 'cursor-pointer mb-4 p-4 rounded-lg bg-white shadow-sm flex items-center justify-between transition-all duration-200 hover:shadow-lg hover:border-indigo-500 border-2 border-transparent';
+                optionDiv.className = 'cursor-pointer mb-4 p-4 rounded-lg bg-gradient-to-br from-green-50 to-blue-50 shadow-md transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1';
                 optionDiv.onclick = () => selectStatement(statement);
                 optionDiv.innerHTML = `
                     <p class="text-sm text-gray-700 italic flex-grow">${statement}</p>
@@ -217,6 +280,7 @@
             const finalStatementTextarea = document.getElementById('final-statement');
             finalStatementTextarea.value = statement;
             document.getElementById('edit-and-save-section').classList.remove('hidden');
+            document.getElementById('generated-options').classList.add('hidden');
         };
 
         const saveStatement = () => {
@@ -233,7 +297,8 @@
                 localStorage.setItem('savedMissionStatement', finalStatement);
                 statusDiv.textContent = 'Your final mission statement has been saved locally!';
                 statusDiv.className = 'text-center mt-4 text-green-500';
-                loadSavedStatement(); // Update the saved section
+                loadSavedStatement();
+                document.getElementById('edit-and-save-section').classList.add('hidden');
             } catch (error) {
                 console.error("Error saving mission statement:", error);
                 statusDiv.textContent = 'There was an error saving your statement.';
@@ -256,12 +321,20 @@
 
         const clearSavedStatement = () => {
             localStorage.removeItem('savedMissionStatement');
-            loadSavedStatement(); // Hide the section
+            loadSavedStatement();
+            document.getElementById('questions-container').classList.remove('hidden');
+            showStep(1); // Return to the first question
         };
 
-        window.onload = loadSavedStatement;
+        window.onload = () => {
+            showStep(currentStep);
+            loadSavedStatement();
+        };
+
         window.toggleIdeas = toggleIdeas;
         window.selectIdea = selectIdea;
+        window.nextQuestion = nextQuestion;
+        window.prevQuestion = prevQuestion;
         window.generateStatements = generateStatements;
         window.selectStatement = selectStatement;
         window.saveStatement = saveStatement;
@@ -269,3 +342,5 @@
     </script>
 </body>
 </html>
+
+
