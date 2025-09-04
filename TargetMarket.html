@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Market Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            background-image: linear-gradient(to top, #f1f5f9 0%, #e2e8f0 100%);
+        }
+        .app-container {
+            max-width: 600px;
+        }
+        .card {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-primary {
+            @apply bg-blue-600 text-white font-medium rounded-full py-3 px-6 hover:bg-blue-700 transition duration-300 ease-in-out;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 text-gray-800 font-medium rounded-full py-3 px-6 hover:bg-gray-300 transition duration-300 ease-in-out;
+        }
+        .btn-option {
+            @apply flex items-center justify-between w-full text-left bg-gray-100 text-gray-700 rounded-xl px-6 py-4 mb-4 font-medium hover:bg-blue-100 hover:text-blue-700 transition duration-200 ease-in-out;
+        }
+        .btn-option.selected {
+            @apply bg-blue-500 text-white shadow-lg transform scale-105;
+        }
+        .check-icon {
+            @apply transition-transform duration-300 ease-in-out;
+        }
+        .check-icon.hidden {
+            @apply scale-0 opacity-0;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="app-container w-full mx-auto p-4 sm:p-8">
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="card text-center fade-in">
+            <div class="text-6xl mb-4">💡</div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 mb-4">Find Your Ideal Client</h1>
+            <p class="text-lg text-gray-600 mb-8">A quick guide for estheticians & massage therapists to define their target market.</p>
+            <button id="start-button" class="btn-primary">Get Started</button>
+        </div>
+
+        <!-- Profession Screen -->
+        <div id="profession-screen" class="card text-center hidden fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">What is your profession?</h2>
+            <button id="esthetician-button" class="btn-primary w-full mb-4">Esthetician</button>
+            <button id="massage-therapist-button" class="btn-primary w-full mb-4">Massage Therapist</button>
+            <button id="other-button" class="btn-primary w-full">Other</button>
+        </div>
+
+        <!-- Questions Screen -->
+        <div id="questions-screen" class="hidden fade-in">
+            <div class="card space-y-6">
+                <p id="progress-indicator" class="text-sm font-medium text-gray-500 text-center mb-2"></p>
+                <p id="question-text" class="text-xl font-semibold text-gray-800 text-left"></p>
+                <div id="options-container" class="space-y-4"></div>
+                <div class="flex justify-between mt-6">
+                    <button id="back-button" class="btn-secondary hidden">Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden fade-in">
+            <div class="card text-center space-y-6">
+                <div class="text-6xl mb-2">🎯</div>
+                <h2 class="text-3xl font-bold text-gray-800">Your Target Market Profile</h2>
+                <div id="profile-output" class="text-left text-lg text-gray-700 space-y-4"></div>
+                <p class="text-sm text-gray-500 mt-6">Disclaimer: This tool provides general marketing tips and is not a substitute for professional business, legal, or financial advice. Consult with a qualified professional for your specific needs.</p>
+                <button id="restart-button" class="btn-primary">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const introScreen = document.getElementById('intro-screen');
+        const professionScreen = document.getElementById('profession-screen');
+        const questionsScreen = document.getElementById('questions-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startButton = document.getElementById('start-button');
+        const estheticianButton = document.getElementById('esthetician-button');
+        const massageTherapistButton = document.getElementById('massage-therapist-button');
+        const otherButton = document.getElementById('other-button');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const backButton = document.getElementById('back-button');
+        const profileOutput = document.getElementById('profile-output');
+        const restartButton = document.getElementById('restart-button');
+
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let userProfession = '';
+        let questions = [];
+
+        // Data for the questions and options for each profession, with added descriptions for clarity
+        const estheticianQuestions = [
+            {
+                question: "What is your esthetics specialty?",
+                options: [
+                    { text: "Acne and corrective skincare", value: "acne", description: "You help clients with persistent breakouts, scars, and uneven skin texture." },
+                    { text: "Anti-aging and skin rejuvenation", value: "anti_aging", description: "You specialize in treatments for fine lines, wrinkles, and loss of firmness." },
+                    { text: "Holistic and natural skincare", value: "holistic", description: "You use natural products and focus on the mind-body connection for skin health." }
+                ]
+            },
+            {
+                question: "What is the typical age range of your ideal client?",
+                options: [
+                    { text: "18-24 (Gen Z)", value: "young adult", description: "Often digitally savvy, seeking trendy and affordable skincare solutions." },
+                    { text: "25-45 (Millennials)", value: "middle aged", description: "Career-focused professionals or busy parents looking for effective, reliable results." },
+                    { text: "45-65+ (Gen X and Boomers)", value: "mature adult", description: "Established clients focused on long-term skin health, quality, and a personal connection." }
+                ]
+            },
+            {
+                question: "Where do your ideal clients spend their time online?",
+                options: [
+                    { text: "Instagram, TikTok (visual content)", value: "social media", description: "They're influenced by influencers and short, engaging videos." },
+                    { text: "Skincare blogs, forums, and online communities", value: "online community", description: "They research products and treatments in detail and value expert opinions." },
+                    { text: "YouTube, Pinterest", value: "visual platforms", description: "They look for tutorials, product reviews, and aesthetic inspiration." }
+                ]
+            },
+            {
+                question: "What problem are you primarily solving for your clients?",
+                options: [
+                    { text: "Chronic skin conditions and breakouts", value: "skin condition", description: "You are their go-to expert for clear, healthy skin." },
+                    { text: "Signs of aging like fine lines and wrinkles", value: "aging", description: "You help them restore a youthful, radiant appearance." },
+                    { text: "Stress-related skin issues and lack of radiance", value: "stress", description: "You provide an escape and a path to glowing, revitalized skin." }
+                ]
+            }
+        ];
+
+        const massageTherapistQuestions = [
+            {
+                question: "What is your massage specialty?",
+                options: [
+                    { text: "Deep tissue and therapeutic massage", value: "deep_tissue", description: "You help clients with chronic muscle tension, pain, and injury recovery." },
+                    { text: "Relaxation and Swedish massage", value: "relaxation", description: "You provide a calming escape for stress relief and mental relaxation." },
+                    { text: "Prenatal or sports-specific massage", value: "specialized", description: "You focus on the specific needs of athletes or expectant mothers." }
+                ]
+            },
+            {
+                question: "What is the typical age range of your ideal client?",
+                options: [
+                    { text: "18-24 (Athletes, students)", value: "young adult", description: "They seek help for muscle recovery and performance enhancement." },
+                    { text: "25-45 (Professionals, active individuals)", value: "middle aged", description: "They need relief from work-related stress, tension, and fatigue." },
+                    { text: "45-65+ (Pain management, wellness)", value: "mature adult", description: "They focus on pain management and improving mobility and quality of life." }
+                ]
+            },
+            {
+                question: "Where do your ideal clients spend their time online?",
+                options: [
+                    { text: "Facebook, local community groups", value: "local community", description: "They look for trusted local services recommended by their neighbors." },
+                    { text: "Professional networking sites (LinkedIn)", value: "professional network", description: "They are career-oriented and value professionalism and expertise." },
+                    { text: "Wellness blogs, health forums, and fitness sites", value: "online community", description: "They research health and wellness topics and are active in related online groups." }
+                ]
+            },
+            {
+                question: "What problem are you primarily solving for your clients?",
+                options: [
+                    { text: "Chronic pain and physical tension", value: "pain", description: "You offer a solution for persistent discomfort and limited mobility." },
+                    { text: "Stress relief and mental relaxation", value: "stress", description: "You provide a rejuvenating escape from a hectic lifestyle." },
+                    { text: "Muscle recovery and athletic performance", value: "recovery", description: "You help them bounce back faster and reach their fitness goals." }
+                ]
+            }
+        ];
+
+        const otherQuestions = [
+            {
+                question: "What is the primary service you offer?",
+                options: [
+                    { text: "Coaching or Consulting", value: "coaching_consulting", description: "You offer expert guidance or advice on a specific topic." },
+                    { text: "Creative or Arts", value: "creative_arts", description: "You create visual, written, or performing art for clients." },
+                    { text: "Digital Products or Services", value: "digital_products", description: "You provide online courses, tools, or templates." }
+                ]
+            },
+            {
+                question: "What is the general demographic of your ideal client?",
+                options: [
+                    { text: "Individuals and hobbyists", value: "individual", description: "You work directly with consumers on their personal goals or interests." },
+                    { text: "Small business owners or entrepreneurs", value: "small_business", description: "You help businesses grow, improve, or manage their operations." },
+                    { text: "Larger organizations or corporate clients", value: "corporate", description: "You provide services to established companies and their teams." }
+                ]
+            },
+            {
+                question: "What is the main problem you solve for your clients?",
+                options: [
+                    { text: "They need to save time or increase efficiency", value: "efficiency", description: "You streamline a process or automate a task for them." },
+                    { text: "They need a specific skill or expertise they lack", value: "expertise", description: "You provide knowledge or a solution they cannot find themselves." },
+                    { text: "They need a creative solution or artistic work", value: "creative", description: "You deliver a unique design, story, or visual asset." }
+                ]
+            },
+            {
+                question: "Where do you typically find your clients?",
+                options: [
+                    { text: "Online professional networks and forums", value: "online_network", description: "You connect with them on platforms like LinkedIn, Reddit, or industry-specific sites." },
+                    { text: "Local networking events and community groups", value: "local_network", description: "You meet them in person at events, groups, or trade shows." },
+                    { text: "Through referrals and word-of-mouth", value: "referrals", description: "Your clients are primarily from existing connections and happy customers." }
+                ]
+            }
+        ];
+
+        const tips = {
+            esthetician: {
+                "young adult": {
+                    "social media": "Create short, engaging video content on **TikTok and Instagram Reels** showing quick transformations, product reviews, and at-home skincare tips.",
+                    "online community": "Participate in **skincare and beauty forums** (like on Reddit or Facebook) by answering questions and providing valuable, non-promotional advice.",
+                    "visual platforms": "Post **before-and-after photos** on Instagram and Pinterest, and create **short-form tutorials** on YouTube to build trust and show expertise.",
+                },
+                "middle aged": {
+                    "social media": "Run **targeted ads on Instagram and Facebook** focusing on 'stress-free self-care' or 'quick glow-up' services. Partner with local businesses your clients frequent.",
+                    "online community": "Engage in **local Facebook groups** and community forums, offering your services as a local professional solution for busy parents and professionals.",
+                    "visual platforms": "Create **YouTube videos** that solve common skin issues for busy individuals, and post aesthetically pleasing, professional photos of your spa on Pinterest."
+                },
+                "mature adult": {
+                    "social media": "Use **Facebook ads** to reach your demographic with content about anti-aging, long-term skin health, and a luxurious spa experience.",
+                    "online community": "Engage with **wellness blogs and community groups** focused on healthy aging and self-care. Offer value by sharing your knowledge and expertise.",
+                    "visual platforms": "Highlight your experience and professional certifications on **LinkedIn** to attract clients who value expertise. Use high-quality, professional photography of your practice."
+                },
+                "acne": "Focus your content and marketing messages on **results**. Use before-and-after photos and client testimonials to show how you've helped others with acne.",
+                "anti_aging": "Market your services as a **long-term investment in skin health**. Emphasize the science behind your treatments and products, and show the cumulative results of your services.",
+                "holistic": "Promote your services through **wellness-focused platforms**. Partner with yoga studios, health food stores, and holistic wellness providers to reach your ideal client."
+            },
+            massage_therapist: {
+                "young adult": {
+                    "local community": "Join local sports teams or fitness groups and offer a **free short massage** to showcase your skills and get referrals.",
+                    "professional network": "Write articles or posts on **LinkedIn** about the importance of physical wellness for young professionals and how massage can help.",
+                    "online community": "Engage with **fitness forums and community groups** by answering questions about muscle recovery and injury prevention."
+                },
+                "middle aged": {
+                    "local community": "Host a workshop at a local business or community center on **stress management and posture**. Offer a discount on your services to attendees.",
+                    "professional network": "Highlight your expertise on **LinkedIn** with posts about the physical benefits of regular massage for busy professionals.",
+                    "online community": "Engage in local **Facebook groups** to share tips on how to manage back pain or shoulder tension from sitting at a desk all day."
+                },
+                "mature adult": {
+                    "local community": "Partner with **physical therapy clinics or senior centers** to offer your services. Attend local health fairs to build a network of referrals.",
+                    "professional network": "Create content on **LinkedIn** discussing the importance of mobility and pain management as we age, positioning yourself as an expert.",
+                    "online community": "Join **wellness and health forums** for your demographic and offer valuable tips on pain management and improving quality of life."
+                },
+                "deep_tissue": "Emphasize your skills as a **problem-solver**. Use testimonials and case studies to show how you've helped clients with chronic pain.",
+                "relaxation": "Market your services as a **mental health and wellness escape**. Use serene imagery and relaxing language in your marketing materials to attract clients seeking stress relief.",
+                "specialized": "Position yourself as the **go-to expert** for your niche. Obtain additional certifications and partner with relevant professionals (e.g., OB-GYNs for prenatal, physical therapists for sports)."
+            },
+            other: {
+                serviceType: {
+                    "coaching_consulting": "Position yourself as an authority in your field. Showcase your expertise with free valuable content, case studies, and testimonials.",
+                    "creative_arts": "Build a strong **online portfolio** on a professional platform. Use social media to showcase your creative process and finished work.",
+                    "digital_products": "Promote your product's value proposition. Use content marketing (e.g., blogs, YouTube videos) to teach concepts and show how your product is the solution."
+                },
+                discoveryChannels: {
+                    "individual": {
+                        "online_network": "Market on platforms where individuals gather, like **Instagram, Facebook, or Pinterest**. Use content that speaks directly to their personal needs and interests.",
+                        "local_network": "Host pop-up events or set up a booth at **local craft fairs or markets** to engage directly with individual consumers.",
+                        "referrals": "Offer a special incentive, like a **discount or a free bonus**, to clients who refer friends and family."
+                    },
+                    "small_business": {
+                        "online_network": "Focus your marketing on **solving common business problems**. Use case studies and testimonials from other small businesses to build trust.",
+                        "local_network": "Join **local chambers of commerce** and attend events to connect with other small business owners.",
+                        "referrals": "Create a referral program that rewards your clients for spreading the word. Focus on delivering **exceptional value** so they are excited to share your service."
+                    },
+                    "corporate": {
+                        "online_network": "Market through **professional channels**, like LinkedIn. Emphasize your ability to handle large projects and provide professional solutions.",
+                        "local_network": "Network with key decision-makers at **local corporate events** and industry conferences.",
+                        "referrals": "Reach out to past corporate clients and ask for testimonials or referrals to their professional network."
+                    }
+                }
+            }
+        };
+
+        // --- Core Functions ---
+
+        function showScreen(screen) {
+            introScreen.classList.add('hidden');
+            professionScreen.classList.add('hidden');
+            questionsScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            screen.classList.remove('hidden');
+        }
+
+        function renderQuestion() {
+            progressIndicator.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+            if (currentQuestionIndex > 0) {
+                backButton.classList.remove('hidden');
+            } else {
+                backButton.classList.add('hidden');
+            }
+
+            const q = questions[currentQuestionIndex];
+            questionText.textContent = q.question;
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('btn-option');
+                button.dataset.value = option.value;
+                button.innerHTML = `
+                    <div class="flex-grow">
+                        <span class="font-semibold text-lg block text-left">${option.text}</span>
+                        <span class="text-sm text-gray-500 mt-1 block text-left">${option.description}</span>
+                    </div>
+                    <svg class="h-6 w-6 text-white ml-4 check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                
+                const checkmark = button.querySelector('.check-icon');
+                if (userAnswers[currentQuestionIndex] === option.value) {
+                    button.classList.add('selected');
+                    const spans = button.querySelectorAll('span');
+                    spans[1].classList.remove('text-gray-500');
+                    spans[1].classList.add('text-white');
+                    checkmark.classList.remove('hidden');
+                } else {
+                    checkmark.classList.add('hidden');
+                }
+
+                button.addEventListener('click', () => {
+                    optionsContainer.querySelectorAll('.btn-option').forEach(btn => {
+                        btn.classList.remove('selected');
+                        const spans = btn.querySelectorAll('span');
+                        spans[1].classList.remove('text-white');
+                        spans[1].classList.add('text-gray-500');
+                        btn.querySelector('.check-icon').classList.add('hidden');
+                    });
+                    
+                    button.classList.add('selected');
+                    const selectedSpans = button.querySelectorAll('span');
+                    selectedSpans[1].classList.remove('text-gray-500');
+                    selectedSpans[1].classList.add('text-white');
+                    checkmark.classList.remove('hidden');
+
+                    userAnswers[currentQuestionIndex] = option.value;
+                    
+                    setTimeout(() => {
+                        if (currentQuestionIndex < questions.length - 1) {
+                            currentQuestionIndex++;
+                            renderQuestion();
+                        } else {
+                            showResults();
+                        }
+                    }, 300); // Small delay for visual feedback
+                });
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function showResults() {
+            // Basic error handling to ensure all questions were answered
+            if (!userAnswers || userAnswers.length !== questions.length) {
+                profileOutput.innerHTML = `
+                    <div class="text-center text-red-500 font-bold">
+                        <p>Oops! It looks like you missed a question. Please go back and try again.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const professionKey = userProfession.toLowerCase().replace(' ', '_');
+            
+            // Retrieve the user's answers
+            const specialty = userAnswers[0];
+            const secondAnswer = userAnswers[1];
+            const thirdAnswer = userAnswers[2];
+            const fourthAnswer = userAnswers[3];
+            
+            let clientProfile = '';
+            let tipSection = '';
+
+            // Handle the different professions
+            if (userProfession === 'Esthetician' || userProfession === 'Massage Therapist') {
+                const clientTypes = {
+                    esthetician: {
+                        acne: "The client with persistent acne, seeking professional guidance and specialized treatments to achieve clear skin.",
+                        anti_aging: "The client focused on preventative and corrective treatments for aging, valuing high-tech solutions and results.",
+                        holistic: "The client who prefers natural, clean beauty products and services, valuing a holistic approach to skin health."
+                    },
+                    massage_therapist: {
+                        deep_tissue: "The client with chronic muscle tension or pain, seeking therapeutic and deep tissue work to find relief.",
+                        relaxation: "The client seeking stress reduction and pure relaxation, valuing a calming environment and gentle touch.",
+                        specialized: "The client with specific needs, such as a pregnant mother or an athlete, who requires targeted, expert care."
+                    }
+                };
+                const ageRanges = {
+                    "young adult": "Young professionals, often digitally savvy and active on social media. They are seeking treatments that are both affordable and trendy.",
+                    "middle aged": "Career-focused individuals and parents who have limited time but have disposable income. They are looking for effective, reliable services that provide real results and stress relief.",
+                    "mature adult": "Established clients with time for self-care and a focus on long-term wellness and anti-aging. They value quality, trust, and a personal connection with their provider."
+                };
+                const onlinePresence = {
+                    "social media": "You can find your clients on Instagram and TikTok.",
+                    "online community": "Your clients are active in wellness blogs and forums.",
+                    "visual platforms": "Your clients are on YouTube and Pinterest.",
+                    "local community": "Your clients are active in local Facebook groups and community forums.",
+                    "professional network": "Your clients are on platforms like LinkedIn."
+                };
+                const painPoints = {
+                    "skin condition": "Your clients have skin concerns like acne or rosacea.",
+                    "aging": "Your clients want to address fine lines and wrinkles.",
+                    "stress": "Your clients are stressed and overwhelmed.",
+                    "pain": "Your clients suffer from chronic pain.",
+                    "recovery": "Your clients are athletes or active individuals."
+                };
+
+                // Get the text for the age range option
+                const ageOption = questions[1].options.find(opt => opt.value === secondAnswer);
+                const ageRangeText = ageOption ? ageOption.text : 'undefined';
+
+                clientProfile = `
+                    <p><strong>Your Profession:</strong> ${userProfession}</p>
+                    <p><strong>Client Profile:</strong> ${clientTypes[professionKey][specialty]}</p>
+                    <p><strong>Ideal Age Range:</strong> ${ageRangeText}. ${ageRanges[secondAnswer]}</p>
+                    <p><strong>Where to Find Them:</strong> ${onlinePresence[thirdAnswer]}</p>
+                    <p><strong>Problem You're Solving:</strong> ${painPoints[fourthAnswer]}</p>
+                `;
+
+                // Add the tips
+                tipSection = `
+                    <h3 class="font-bold mt-6">What to Do Next</h3>
+                    <ul class="list-disc pl-5">
+                        <li class="mb-2">${tips[professionKey][specialty]}</li>
+                        <li class="mb-2">${tips[professionKey][secondAnswer][thirdAnswer]}</li>
+                        <li class="mb-2">Your messaging should focus on: "${painPoints[fourthAnswer]}"</li>
+                    </ul>
+                `;
+
+            } else { // Handle 'Other' profession
+                const clientTypesOther = {
+                    "coaching_consulting": "You serve a client seeking expert guidance or a professional solution.",
+                    "creative_arts": "You serve a client who needs an artistic or unique creative work.",
+                    "digital_products": "You serve a client who needs to learn a new skill or solve a specific problem with a digital tool."
+                };
+                const otherDemographics = {
+                    "individual": "Your ideal client is an individual consumer or a hobbyist.",
+                    "small_business": "Your ideal client is a small business owner or entrepreneur.",
+                    "corporate": "You provide services to established companies and their teams."
+                };
+                const otherPainPoints = {
+                    "efficiency": "Your clients are looking to save time or money.",
+                    "expertise": "You provide knowledge or a solution they cannot find themselves."
+                };
+                const otherOnlinePresence = {
+                    "online_network": "You can find your clients on professional networks and forums.",
+                    "local_network": "Your clients are in your local area.",
+                    "referrals": "Your clients primarily come from word-of-mouth."
+                };
+                
+                const serviceTip = tips.other.serviceType[specialty];
+                const marketingTip = tips.other.discoveryChannels[secondAnswer][fourthAnswer];
+
+                clientProfile = `
+                    <p><strong>Your Profession:</strong> ${userProfession}</p>
+                    <p><strong>Client Profile:</strong> ${clientTypesOther[specialty]}</p>
+                    <p><strong>Ideal Client Demographic:</strong> ${otherDemographics[secondAnswer]}</p>
+                    <p><strong>Problem You're Solving:</strong> ${otherPainPoints[thirdAnswer]}</p>
+                    <p><strong>Where to Find Them:</strong> ${otherOnlinePresence[fourthAnswer]}</p>
+                `;
+
+                tipSection = `
+                    <h3 class="font-bold mt-6">What to Do Next</h3>
+                    <ul class="list-disc pl-5">
+                        <li class="mb-2">${serviceTip}</li>
+                        <li class="mb-2">${marketingTip}</li>
+                        <li class="mb-2">Your marketing messages should highlight your ability to solve your client's need for: "${otherPainPoints[thirdAnswer]}"</li>
+                    </ul>
+                `;
+            }
+
+            profileOutput.innerHTML = clientProfile + tipSection;
+            showScreen(resultsScreen);
+        }
+        
+        // --- Event Listeners ---
+        
+        startButton.addEventListener('click', () => {
+            showScreen(professionScreen);
+        });
+
+        estheticianButton.addEventListener('click', () => {
+            userProfession = 'Esthetician';
+            questions = estheticianQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        massageTherapistButton.addEventListener('click', () => {
+            userProfession = 'Massage Therapist';
+            questions = massageTherapistQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        otherButton.addEventListener('click', () => {
+            userProfession = 'Other';
+            questions = otherQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        backButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            } else {
+                 showScreen(professionScreen);
+            }
+        });
+
+        restartButton.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(introScreen);
+        });
+    </script>
+</body>
+</html>
+
+
+
+            const q = questions[currentQuestionIndex];
+            questionText.textContent = q.question;
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('btn-option');
+                button.dataset.value = option.value;
+                
+                if (userAnswers[currentQuestionIndex] === option.value) {
+                    button.classList.add('selected');
+                }
+
+                button.addEventListener('click', () => {
+                    optionsContainer.querySelectorAll('.btn-option').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    userAnswers[currentQuestionIndex] = option.value;
+                    
+                    setTimeout(() => {
+                        if (currentQuestionIndex < questions.length - 1) {
+                            currentQuestionIndex++;
+                            renderQuestion();
+                        } else {
+                            showResults();
+                        }
+                    }, 300); // Small delay for visual feedback
+                });
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function showResults() {
+            const professionKey = userProfession.toLowerCase().replace(' ', '_');
+            
+            // Retrieve the user's answers
+            const specialty = userAnswers[0];
+            const secondAnswer = userAnswers[1];
+            const thirdAnswer = userAnswers[2];
+            const fourthAnswer = userAnswers[3];
+            
+            let clientProfile = '';
+            let tipSection = '';
+
+            // Handle the different professions
+            if (userProfession === 'Esthetician' || userProfession === 'Massage Therapist') {
+                const clientTypes = {
+                    esthetician: {
+                        acne: "The client with persistent acne, seeking professional guidance and specialized treatments to achieve clear skin.",
+                        anti_aging: "The client focused on preventative and corrective treatments for aging, valuing high-tech solutions and results.",
+                        holistic: "The client who prefers natural, clean beauty products and services, valuing a holistic approach to skin health."
+                    },
+                    massage_therapist: {
+                        deep_tissue: "The client with chronic muscle tension or pain, seeking therapeutic and deep tissue work to find relief.",
+                        relaxation: "The client seeking stress reduction and pure relaxation, valuing a calming environment and gentle touch.",
+                        specialized: "The client with specific needs, such as a pregnant mother or an athlete, who requires targeted, expert care."
+                    }
+                };
+                const ageRanges = {
+                    "young adult": "Young professionals, often digitally savvy and active on social media. They are seeking treatments that are both affordable and trendy.",
+                    "middle aged": "Career-focused individuals and parents who have limited time but have disposable income. They are looking for effective, reliable services that provide real results and stress relief.",
+                    "mature adult": "Established clients with time for self-care and a focus on long-term wellness and anti-aging. They value quality, trust, and a personal connection with their provider."
+                };
+                const onlinePresence = {
+                    "social media": "You can find your clients on Instagram and TikTok.",
+                    "online community": "Your clients are active in wellness blogs and forums.",
+                    "visual platforms": "Your clients are on YouTube and Pinterest.",
+                    "local community": "Your clients are active in local Facebook groups and community forums.",
+                    "professional network": "Your clients are on platforms like LinkedIn."
+                };
+                const painPoints = {
+                    "skin condition": "Your clients have skin concerns like acne or rosacea.",
+                    "aging": "Your clients want to address fine lines and wrinkles.",
+                    "stress": "Your clients are stressed and overwhelmed.",
+                    "pain": "Your clients suffer from chronic pain.",
+                    "recovery": "Your clients are athletes or active individuals."
+                };
+
+                // Get the text for the age range option
+                const ageOption = questions[1].options.find(opt => opt.value === secondAnswer);
+                const ageRangeText = ageOption ? ageOption.text : 'undefined';
+
+                clientProfile = `
+                    <p><strong>Your Profession:</strong> ${userProfession}</p>
+                    <p><strong>Client Profile:</strong> ${clientTypes[professionKey][specialty]}</p>
+                    <p><strong>Ideal Age Range:</strong> ${ageRangeText}. ${ageRanges[secondAnswer]}</p>
+                    <p><strong>Where to Find Them:</strong> ${onlinePresence[thirdAnswer]}</p>
+                    <p><strong>Problem You're Solving:</strong> ${painPoints[fourthAnswer]}</p>
+                `;
+
+                // Add the tips
+                tipSection = `
+                    <h3 class="font-bold mt-6">What to Do Next</h3>
+                    <ul class="list-disc pl-5">
+                        <li class="mb-2">${tips[professionKey][specialty]}</li>
+                        <li class="mb-2">${tips[professionKey][secondAnswer][thirdAnswer]}</li>
+                        <li class="mb-2">Your messaging should focus on: "${painPoints[fourthAnswer]}"</li>
+                    </ul>
+                `;
+
+            } else { // Handle 'Other' profession
+                const clientTypesOther = {
+                    "physical service": "You serve a hands-on or direct service-based client.",
+                    "informational service": "You serve a client seeking knowledge and expertise.",
+                    "creative service": "You serve a client who needs a visual or creative solution."
+                };
+                const otherDemographics = {
+                    "individual": "Your ideal client is an individual consumer or a hobbyist.",
+                    "small business": "Your ideal client is a small business owner or entrepreneur.",
+                    "corporate": "Your ideal client is a large organization."
+                };
+                const otherPainPoints = {
+                    "efficiency": "Your clients are looking to save time or money. ",
+                    "expertise": "Your clients are looking for a specific skill they lack.",
+                    "creative": "Your clients need an artistic or original solution."
+                };
+                const otherOnlinePresence = {
+                    "online network": "You can find your clients on professional networks like LinkedIn or niche forums.",
+                    "local network": "Your clients are in your local area. ",
+                    "referrals": "Your clients primarily come from word-of-mouth."
+                };
+                
+                const serviceTip = tips.other.serviceType[specialty];
+                const marketingTip = tips.other.findingClients[secondAnswer][fourthAnswer];
+
+                clientProfile = `
+                    <p><strong>Your Profession:</strong> ${userProfession}</p>
+                    <p><strong>Client Profile:</strong> ${clientTypesOther[specialty]}</p>
+                    <p><strong>Ideal Client Demographic:</strong> ${otherDemographics[secondAnswer]}</p>
+                    <p><strong>Problem You're Solving:</strong> ${otherPainPoints[thirdAnswer]}</p>
+                    <p><strong>Where to Find Them:</strong> ${otherOnlinePresence[fourthAnswer]}</p>
+                `;
+
+                tipSection = `
+                    <h3 class="font-bold mt-6">What to Do Next</h3>
+                    <ul class="list-disc pl-5">
+                        <li class="mb-2">${serviceTip}</li>
+                        <li class="mb-2">${marketingTip}</li>
+                        <li class="mb-2">Your marketing messages should highlight your ability to solve your client's need for: "${otherPainPoints[thirdAnswer]}"</li>
+                    </ul>
+                `;
+            }
+
+            profileOutput.innerHTML = clientProfile + tipSection;
+            showScreen(resultsScreen);
+        }
+        
+        // --- Event Listeners ---
+        
+        startButton.addEventListener('click', () => {
+            showScreen(professionScreen);
+        });
+
+        estheticianButton.addEventListener('click', () => {
+            userProfession = 'Esthetician';
+            questions = estheticianQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        massageTherapistButton.addEventListener('click', () => {
+            userProfession = 'Massage Therapist';
+            questions = massageTherapistQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        otherButton.addEventListener('click', () => {
+            userProfession = 'Other';
+            questions = otherQuestions;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        backButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            } else {
+                 showScreen(professionScreen);
+            }
+        });
+
+        restartButton.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            showScreen(introScreen);
+        });
+    </script>
+</body>
+</html>
