@@ -1,742 +1,517 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Target Market Finder</title>
+    <title>Simple Target Market Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            background-image: linear-gradient(to top, #f1f5f9 0%, #e2e8f0 100%);
+            background-color: #f3f4f6;
+            color: #1f2937;
         }
-        .app-container {
-            max-width: 600px;
+        .card-option {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
         }
-        .card {
-            background-color: white;
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
-            border: 1px solid #e2e8f0;
+        .card-option.selected {
+            background-color: #d1fae5;
+            border-color: #34d399;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .btn-primary {
-            @apply bg-blue-600 text-white font-medium rounded-full py-3 px-6 hover:bg-blue-700 transition duration-300 ease-in-out;
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
         }
-        .btn-secondary {
-            @apply bg-gray-200 text-gray-800 font-medium rounded-full py-3 px-6 hover:bg-gray-300 transition duration-300 ease-in-out;
-        }
-        .btn-option {
-            @apply flex items-center justify-between w-full text-left bg-gray-100 text-gray-700 rounded-xl px-6 py-4 mb-4 font-medium hover:bg-blue-100 hover:text-blue-700 transition duration-200 ease-in-out;
-        }
-        .btn-option.selected {
-            @apply bg-blue-500 text-white shadow-lg transform scale-105;
-        }
-        .check-icon {
-            @apply transition-transform duration-300 ease-in-out;
-        }
-        .check-icon.hidden {
-            @apply scale-0 opacity-0;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .item-list li {
+            background-color: #e5e7eb;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center p-4">
 
-    <div class="app-container w-full mx-auto p-4 sm:p-8">
-        <!-- Intro Screen -->
-        <div id="intro-screen" class="card text-center fade-in">
-            <div class="text-6xl mb-4">💡</div>
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 mb-4">Find Your Ideal Client</h1>
-            <p class="text-lg text-gray-600 mb-8">A quick guide for estheticians & massage therapists to define their target market.</p>
-            <button id="start-button" class="btn-primary">Get Started</button>
+    <!-- Main Tool Container -->
+    <div class="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:shadow-2xl">
+        <div class="text-center mb-6">
+            <img src="https://i.postimg.cc/65Q7HK8j/blue-LOGO.png" alt="Solo Practice Logo" class="mx-auto h-40 mb-4 rounded-lg">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Target Market Profile</h1>
+            <p class="text-gray-600">
+                Build a detailed profile of your ideal client to focus your marketing.
+            </p>
         </div>
 
-        <!-- Profession Screen -->
-        <div id="profession-screen" class="card text-center hidden fade-in">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">What is your profession?</h2>
-            <button id="esthetician-button" class="btn-primary w-full mb-4">Esthetician</button>
-            <button id="massage-therapist-button" class="btn-primary w-full mb-4">Massage Therapist</button>
-            <button id="other-button" class="btn-primary w-full">Other</button>
+        <div class="space-y-8">
+            <!-- Section 1: Demographics -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">Who are you going to serve?</h3>
+                <div class="space-y-4">
+                    <!-- Age Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">What is their approximate age range?</label>
+                        <div id="demographics-age-options" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '18-24')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                18-24
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '25-34')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                25-34
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '35-44')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                35-44
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '45-54')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                45-54
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '55-64')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                55-64
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-age', '65+')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                65+
+                            </div>
+                            <div onclick="toggleOtherInput(this, 'demographics-age')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center col-span-2 sm:col-span-1">
+                                Other
+                            </div>
+                        </div>
+                        <input type="text" id="demographics-age-other-input" placeholder="e.g., Teens" class="mt-2 w-full rounded-md border-gray-300 shadow-sm p-3 hidden">
+                    </div>
+
+                    <!-- Location -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Where can you find your ideal client?</label>
+                        <div id="demographics-location-options" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'In-person at their home/office')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                In-person at their home/office
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'At a local gym or wellness studio')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                At a local gym or wellness studio
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'Within a spa or salon setting')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                Within a spa or salon setting
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'At specific events (e.g., fairs, expos)')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                At specific events (e.g., fairs, expos)
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'Through online forums or social groups')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                Through online forums or social groups
+                            </div>
+                            <div onclick="toggleDemographicItem(this, 'demographics-location', 'At a medical or wellness clinic')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                                At a medical or wellness clinic
+                            </div>
+                            <div onclick="toggleOtherInput(this, 'demographics-location')" class="card-option bg-gray-50 p-3 rounded-lg border border-gray-200 text-center col-span-2 sm:col-span-1">
+                                Other
+                            </div>
+                        </div>
+                        <input type="text" id="demographics-location-other-input" placeholder="e.g., Local Events, Cruise Ships" class="mt-2 w-full rounded-md border-gray-300 shadow-sm p-3 hidden">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Lifestyle & Hobbies -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">What do they like to do?</h3>
+                <label for="lifestyle-input" class="block text-sm font-medium text-gray-700 mb-2">What are their hobbies and interests?</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="lifestyle-input" placeholder="e.g., enjoys yoga, busy social calendar" onkeydown="handleInput(event, 'lifestyle')" onblur="handleInput(event, 'lifestyle')" class="w-full rounded-md border-gray-300 shadow-sm p-3">
+                    <button onclick="getIdeas('lifestyle')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out">Ideas</button>
+                </div>
+                <ul id="lifestyle-list" class="item-list"></ul>
+                <div id="lifestyle-ideas-container" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
+            </div>
+            
+            <!-- Section 3: Pain Points -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">What problems are they facing?</h3>
+                <label for="pain-points-input" class="block text-sm font-medium text-gray-700 mb-2">What are their main problems or challenges?</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="pain-points-input" placeholder="e.g., chronic back pain, tired skin" onkeydown="handleInput(event, 'pain-points')" onblur="handleInput(event, 'pain-points')" class="w-full rounded-md border-gray-300 shadow-sm p-3">
+                    <button onclick="getIdeas('pain-points')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out">Ideas</button>
+                </div>
+                <ul id="pain-points-list" class="item-list"></ul>
+                <div id="pain-points-ideas-container" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
+            </div>
+
+            <!-- Section 4: Goals -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">What do they hope to achieve?</h3>
+                <label for="goals-input" class="block text-sm font-medium text-gray-700 mb-2">What are their goals and desires?</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="goals-input" placeholder="e.g., glowing skin for an event, deep rest" onkeydown="handleInput(event, 'goals')" onblur="handleInput(event, 'goals')" class="w-full rounded-md border-gray-300 shadow-sm p-3">
+                    <button onclick="getIdeas('goals')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out">Ideas</button>
+                </div>
+                <ul id="goals-list" class="item-list"></ul>
+                <div id="goals-ideas-container" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
+            </div>
+            
+            <!-- Section 5: Information Sources -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">Where can you reach them?</h3>
+                <label for="info-sources-input" class="block text-sm font-medium text-gray-700 mb-2">Where do they look for information?</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="info-sources-input" placeholder="e.g., Instagram, wellness podcasts" onkeydown="handleInput(event, 'info-sources')" onblur="handleInput(event, 'info-sources')" class="w-full rounded-md border-gray-300 shadow-sm p-3">
+                    <button onclick="getIdeas('info-sources')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out">Ideas</button>
+                </div>
+                <ul id="info-sources-list" class="item-list"></ul>
+                <div id="info-sources-ideas-container" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
+            </div>
         </div>
 
-        <!-- Questions Screen -->
-        <div id="questions-screen" class="hidden fade-in">
-            <div class="card space-y-6">
-                <p id="progress-indicator" class="text-sm font-medium text-gray-500 text-center mb-2"></p>
-                <p id="question-text" class="text-xl font-semibold text-gray-800 text-left"></p>
-                <div id="options-container" class="space-y-4"></div>
-                <div class="flex justify-between mt-6">
-                    <button id="back-button" class="btn-secondary hidden">Back</button>
+        <!-- Generate Profile Button -->
+        <div class="w-full flex justify-center mt-8 mb-8">
+            <button onclick="generateProfile()" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                Generate My Profile
+            </button>
+        </div>
+
+        <!-- Generated Profile Section -->
+        <div id="generated-profile" class="mt-6 space-y-4 w-full hidden">
+            <div class="p-6 rounded-2xl bg-white shadow-lg">
+                <h2 class="text-2xl font-bold text-center mb-4 text-gray-800">Your Ideal Client Profile:</h2>
+                <div class="p-4 rounded-lg bg-gradient-to-br from-green-50 to-blue-50 shadow-md">
+                    <div id="profile-output" class="text-gray-700 space-y-4"></div>
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <button onclick="saveProfile()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Save This Profile
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Results Screen -->
-        <div id="results-screen" class="hidden fade-in">
-            <div class="card text-center space-y-6">
-                <div class="text-6xl mb-2">🎯</div>
-                <h2 class="text-3xl font-bold text-gray-800">Your Target Market Profile</h2>
-                <div id="profile-output" class="text-left text-lg text-gray-700 space-y-4"></div>
-                <p class="text-sm text-gray-500 mt-6">Disclaimer: This tool provides general marketing tips and is not a substitute for professional business, legal, or financial advice. Consult with a qualified professional for your specific needs.</p>
-                <button id="restart-button" class="btn-primary">Start Over</button>
+        <!-- Saved Profile Section -->
+        <div id="saved-profile-section" class="mt-6 p-4 w-full bg-white rounded-lg shadow-inner hidden">
+            <h2 class="text-xl font-bold text-center mb-4 text-gray-800">Your Saved Target Market Profile</h2>
+            <div class="p-4 bg-gray-100 rounded-lg shadow-sm">
+                <pre id="saved-profile-text" class="whitespace-pre-wrap text-sm text-gray-800 italic"></pre>
+            </div>
+            <div class="mt-4 flex justify-center">
+                <button onclick="clearSavedProfile()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300">
+                    Clear Saved Profile
+                </button>
             </div>
         </div>
+
+        <!-- Status Message -->
+        <p id="status-message" class="text-center mt-4 text-gray-500"></p>
     </div>
 
     <script>
-        const introScreen = document.getElementById('intro-screen');
-        const professionScreen = document.getElementById('profession-screen');
-        const questionsScreen = document.getElementById('questions-screen');
-        const resultsScreen = document.getElementById('results-screen');
-        const startButton = document.getElementById('start-button');
-        const estheticianButton = document.getElementById('esthetician-button');
-        const massageTherapistButton = document.getElementById('massage-therapist-button');
-        const otherButton = document.getElementById('other-button');
-        const progressIndicator = document.getElementById('progress-indicator');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const backButton = document.getElementById('back-button');
-        const profileOutput = document.getElementById('profile-output');
-        const restartButton = document.getElementById('restart-button');
+        const profileData = {
+            "demographics-age": [],
+            "demographics-location": [],
+            lifestyle: [],
+            "pain-points": [],
+            goals: [],
+            "info-sources": []
+        };
+        
+        // Define icons as inline SVG strings for each section
+        const icons = {
+            demographics: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-500"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0a4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.438-.695Z" clip-rule="evenodd" /></svg>',
+            lifestyle: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-500"><path d="M11.47 3.844a.75.75 0 0 0-.921 0L2.47 9.179a.75.75 0 0 0 0 1.141l8.08 5.4a.75.75 0 0 0 .921 0l8.08-5.4a.75.75 0 0 0 0-1.141L11.47 3.844Z" /><path d="m11.47 16.844a.75.75 0 0 0-.921 0L2.47 22.179a.75.75 0 0 0 0 1.141l8.08 5.4a.75.75 0 0 0 .921 0l8.08-5.4a.75.75 0 0 0 0-1.141l-8.08-5.4Z" /></svg>',
+            painPoints: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-500"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12ZM12.75 9a.75.75 0 0 0-1.5 0v3.75a.75.75 0 0 0 .75.75h1.5a.75.75 0 0 0 0-1.5h-.75V9Z" clip-rule="evenodd" /></svg>',
+            goals: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-500"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12Zm11.834-4.707a.75.75 0 0 0-1.06-1.06L9.414 10.5l-2.207-2.207a.75.75 0 0 0-1.06 1.06l2.75 2.75a.75.75 0 0 0 1.06 0l5.25-5.25Z" clip-rule="evenodd" /></svg>',
+            infoSources: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-500"><path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 1.5a.75.75 0 0 0-.75.75V4.5a.75.75 0 0 0 1.5 0V2.25a.75.75 0 0 0-.75-.75Zm9 0a.75.75 0 0 0-.75.75V4.5a.75.75 0 0 0 1.5 0V2.25a.75.75 0 0 0-.75-.75ZM7.5 22.5a.75.75 0 0 0-.75.75V24a.75.75 0 0 0 1.5 0v-1.5a.75.75 0 0 0-.75-.75Zm9 0a.75.75 0 0 0-.75.75V24a.75.75 0 0 0 1.5 0v-1.5a.75.75 0 0 0-.75-.75ZM22.5 7.5a.75.75 0 0 0 .75-.75V6a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 .75.75ZM22.5 16.5a.75.75 0 0 0 .75-.75v-1.5a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 .75.75ZM1.5 7.5a.75.75 0 0 0 .75-.75V6a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 .75.75ZM1.5 16.5a.75.75 0 0 0 .75-.75v-1.5a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 .75.75ZM12 6a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 6Zm-3 3a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 9 9Zm6 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM12 15a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75Zm-3 3a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75Zm6 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" /></svg>'
+        };
 
-        let currentQuestionIndex = 0;
-        let userAnswers = [];
-        let userProfession = '';
-        let questions = [];
+        const predefinedIdeas = {
+            lifestyle: [
+                "Enjoys yoga or fitness classes",
+                "Has a busy professional life",
+                "A parent balancing work and family",
+                "Prioritizes natural and organic products",
+                "Loves to travel and explore new places"
+            ],
+            "pain-points": [
+                "Chronic back or neck pain from a desk job",
+                "Tired, dull, or acne-prone skin",
+                "Feeling stressed and overwhelmed",
+                "Lacks time for self-care",
+                "Difficulty sleeping or relaxing"
+            ],
+            goals: [
+                "To reduce stress and find relaxation",
+                "To have glowing, healthy skin for an event",
+                "To manage chronic pain and improve mobility",
+                "To feel pampered and refreshed",
+                "To improve skin health and combat aging"
+            ],
+            "info-sources": [
+                "Instagram and TikTok",
+                "Wellness and beauty blogs",
+                "Local community groups (online or in-person)",
+                "Wellness podcasts or YouTube channels",
+                "Word-of-mouth recommendations"
+            ]
+        };
 
-        // Data for the questions and options for each profession, with added descriptions for clarity
-        const estheticianQuestions = [
-            {
-                question: "What is your esthetics specialty?",
-                options: [
-                    { text: "Acne and corrective skincare", value: "acne", description: "You help clients with persistent breakouts, scars, and uneven skin texture." },
-                    { text: "Anti-aging and skin rejuvenation", value: "anti_aging", description: "You specialize in treatments for fine lines, wrinkles, and loss of firmness." },
-                    { text: "Holistic and natural skincare", value: "holistic", description: "You use natural products and focus on the mind-body connection for skin health." }
-                ]
-            },
-            {
-                question: "What is the typical age range of your ideal client?",
-                options: [
-                    { text: "18-24 (Gen Z)", value: "young adult", description: "Often digitally savvy, seeking trendy and affordable skincare solutions." },
-                    { text: "25-45 (Millennials)", value: "middle aged", description: "Career-focused professionals or busy parents looking for effective, reliable results." },
-                    { text: "45-65+ (Gen X and Boomers)", value: "mature adult", description: "Established clients focused on long-term skin health, quality, and a personal connection." }
-                ]
-            },
-            {
-                question: "Where do your ideal clients spend their time online?",
-                options: [
-                    { text: "Instagram, TikTok (visual content)", value: "social media", description: "They're influenced by influencers and short, engaging videos." },
-                    { text: "Skincare blogs, forums, and online communities", value: "online community", description: "They research products and treatments in detail and value expert opinions." },
-                    { text: "YouTube, Pinterest", value: "visual platforms", description: "They look for tutorials, product reviews, and aesthetic inspiration." }
-                ]
-            },
-            {
-                question: "What problem are you primarily solving for your clients?",
-                options: [
-                    { text: "Chronic skin conditions and breakouts", value: "skin condition", description: "You are their go-to expert for clear, healthy skin." },
-                    { text: "Signs of aging like fine lines and wrinkles", value: "aging", description: "You help them restore a youthful, radiant appearance." },
-                    { text: "Stress-related skin issues and lack of radiance", value: "stress", description: "You provide an escape and a path to glowing, revitalized skin." }
-                ]
+        const toggleDemographicItem = (element, fieldId, itemText) => {
+            const index = profileData[fieldId].indexOf(itemText);
+            if (index > -1) {
+                profileData[fieldId].splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                profileData[fieldId].push(itemText);
+                element.classList.add('selected');
             }
-        ];
+        };
 
-        const massageTherapistQuestions = [
-            {
-                question: "What is your massage specialty?",
-                options: [
-                    { text: "Deep tissue and therapeutic massage", value: "deep_tissue", description: "You help clients with chronic muscle tension, pain, and injury recovery." },
-                    { text: "Relaxation and Swedish massage", value: "relaxation", description: "You provide a calming escape for stress relief and mental relaxation." },
-                    { text: "Prenatal or sports-specific massage", value: "specialized", description: "You focus on the specific needs of athletes or expectant mothers." }
-                ]
-            },
-            {
-                question: "What is the typical age range of your ideal client?",
-                options: [
-                    { text: "18-24 (Athletes, students)", value: "young adult", description: "They seek help for muscle recovery and performance enhancement." },
-                    { text: "25-45 (Professionals, active individuals)", value: "middle aged", description: "They need relief from work-related stress, tension, and fatigue." },
-                    { text: "45-65+ (Pain management, wellness)", value: "mature adult", description: "They focus on pain management and improving mobility and quality of life." }
-                ]
-            },
-            {
-                question: "Where do your ideal clients spend their time online?",
-                options: [
-                    { text: "Facebook, local community groups", value: "local community", description: "They look for trusted local services recommended by their neighbors." },
-                    { text: "Professional networking sites (LinkedIn)", value: "professional network", description: "They are career-oriented and value professionalism and expertise." },
-                    { text: "Wellness blogs, health forums, and fitness sites", value: "online community", description: "They research health and wellness topics and are active in related online groups." }
-                ]
-            },
-            {
-                question: "What problem are you primarily solving for your clients?",
-                options: [
-                    { text: "Chronic pain and physical tension", value: "pain", description: "You offer a solution for persistent discomfort and limited mobility." },
-                    { text: "Stress relief and mental relaxation", value: "stress", description: "You provide a rejuvenating escape from a hectic lifestyle." },
-                    { text: "Muscle recovery and athletic performance", value: "recovery", description: "You help them bounce back faster and reach their fitness goals." }
-                ]
+        const toggleOtherInput = (element, fieldId) => {
+            const otherInput = document.getElementById(`${fieldId}-other-input`);
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                otherInput.classList.add('hidden');
+                const existingIndex = profileData[fieldId].indexOf(otherInput.value.trim());
+                if (existingIndex > -1) {
+                    profileData[fieldId].splice(existingIndex, 1);
+                }
+                otherInput.value = '';
+            } else {
+                element.classList.add('selected');
+                otherInput.classList.remove('hidden');
+                otherInput.focus();
             }
-        ];
 
-        const otherQuestions = [
-            {
-                question: "What is the primary service you offer?",
-                options: [
-                    { text: "Coaching or Consulting", value: "coaching_consulting", description: "You offer expert guidance or advice on a specific topic." },
-                    { text: "Creative or Arts", value: "creative_arts", description: "You create visual, written, or performing art for clients." },
-                    { text: "Digital Products or Services", value: "digital_products", description: "You provide online courses, tools, or templates." }
-                ]
-            },
-            {
-                question: "What is the general demographic of your ideal client?",
-                options: [
-                    { text: "Individuals and hobbyists", value: "individual", description: "You work directly with consumers on their personal goals or interests." },
-                    { text: "Small business owners or entrepreneurs", value: "small_business", description: "You help businesses grow, improve, or manage their operations." },
-                    { text: "Larger organizations or corporate clients", value: "corporate", description: "You provide services to established companies and their teams." }
-                ]
-            },
-            {
-                question: "What is the main problem you solve for your clients?",
-                options: [
-                    { text: "They need to save time or increase efficiency", value: "efficiency", description: "You streamline a process or automate a task for them." },
-                    { text: "They need a specific skill or expertise they lack", value: "expertise", description: "You provide knowledge or a solution they cannot find themselves." },
-                    { text: "They need a creative solution or artistic work", value: "creative", description: "You deliver a unique design, story, or visual asset." }
-                ]
-            },
-            {
-                question: "Where do you typically find your clients?",
-                options: [
-                    { text: "Online professional networks and forums", value: "online_network", description: "You connect with them on platforms like LinkedIn, Reddit, or industry-specific sites." },
-                    { text: "Local networking events and community groups", value: "local_network", description: "You meet them in person at events, groups, or trade shows." },
-                    { text: "Through referrals and word-of-mouth", value: "referrals", description: "Your clients are primarily from existing connections and happy customers." }
-                ]
-            }
-        ];
+            otherInput.oninput = () => {
+                const newValue = otherInput.value.trim();
+                const existingIndex = profileData[fieldId].findIndex(item => item === otherInput.previousValue);
+                if (existingIndex > -1) {
+                    profileData[fieldId][existingIndex] = newValue;
+                } else if (newValue) {
+                    profileData[fieldId].push(newValue);
+                }
+                otherInput.previousValue = newValue;
+            };
+        };
 
-        const tips = {
-            esthetician: {
-                "young adult": {
-                    "social media": "Create short, engaging video content on **TikTok and Instagram Reels** showing quick transformations, product reviews, and at-home skincare tips.",
-                    "online community": "Participate in **skincare and beauty forums** (like on Reddit or Facebook) by answering questions and providing valuable, non-promotional advice.",
-                    "visual platforms": "Post **before-and-after photos** on Instagram and Pinterest, and create **short-form tutorials** on YouTube to build trust and show expertise.",
-                },
-                "middle aged": {
-                    "social media": "Run **targeted ads on Instagram and Facebook** focusing on 'stress-free self-care' or 'quick glow-up' services. Partner with local businesses your clients frequent.",
-                    "online community": "Engage in **local Facebook groups** and community forums, offering your services as a local professional solution for busy parents and professionals.",
-                    "visual platforms": "Create **YouTube videos** that solve common skin issues for busy individuals, and post aesthetically pleasing, professional photos of your spa on Pinterest."
-                },
-                "mature adult": {
-                    "social media": "Use **Facebook ads** to reach your demographic with content about anti-aging, long-term skin health, and a luxurious spa experience.",
-                    "online community": "Engage with **wellness blogs and community groups** focused on healthy aging and self-care. Offer value by sharing your knowledge and expertise.",
-                    "visual platforms": "Highlight your experience and professional certifications on **LinkedIn** to attract clients who value expertise. Use high-quality, professional photography of your practice."
-                },
-                "acne": "Focus your content and marketing messages on **results**. Use before-and-after photos and client testimonials to show how you've helped others with acne.",
-                "anti_aging": "Market your services as a **long-term investment in skin health**. Emphasize the science behind your treatments and products, and show the cumulative results of your services.",
-                "holistic": "Promote your services through **wellness-focused platforms**. Partner with yoga studios, health food stores, and holistic wellness providers to reach your ideal client."
-            },
-            massage_therapist: {
-                "young adult": {
-                    "local community": "Join local sports teams or fitness groups and offer a **free short massage** to showcase your skills and get referrals.",
-                    "professional network": "Write articles or posts on **LinkedIn** about the importance of physical wellness for young professionals and how massage can help.",
-                    "online community": "Engage with **fitness forums and community groups** by answering questions about muscle recovery and injury prevention."
-                },
-                "middle aged": {
-                    "local community": "Host a workshop at a local business or community center on **stress management and posture**. Offer a discount on your services to attendees.",
-                    "professional network": "Highlight your expertise on **LinkedIn** with posts about the physical benefits of regular massage for busy professionals.",
-                    "online community": "Engage in local **Facebook groups** to share tips on how to manage back pain or shoulder tension from sitting at a desk all day."
-                },
-                "mature adult": {
-                    "local community": "Partner with **physical therapy clinics or senior centers** to offer your services. Attend local health fairs to build a network of referrals.",
-                    "professional network": "Create content on **LinkedIn** discussing the importance of mobility and pain management as we age, positioning yourself as an expert.",
-                    "online community": "Join **wellness and health forums** for your demographic and offer valuable tips on pain management and improving quality of life."
-                },
-                "deep_tissue": "Emphasize your skills as a **problem-solver**. Use testimonials and case studies to show how you've helped clients with chronic pain.",
-                "relaxation": "Market your services as a **mental health and wellness escape**. Use serene imagery and relaxing language in your marketing materials to attract clients seeking stress relief.",
-                "specialized": "Position yourself as the **go-to expert** for your niche. Obtain additional certifications and partner with relevant professionals (e.g., OB-GYNs for prenatal, physical therapists for sports)."
-            },
-            other: {
-                serviceType: {
-                    "coaching_consulting": "Position yourself as an authority in your field. Showcase your expertise with free valuable content, case studies, and testimonials.",
-                    "creative_arts": "Build a strong **online portfolio** on a professional platform. Use social media to showcase your creative process and finished work.",
-                    "digital_products": "Promote your product's value proposition. Use content marketing (e.g., blogs, YouTube videos) to teach concepts and show how your product is the solution."
-                },
-                discoveryChannels: {
-                    "individual": {
-                        "online_network": "Market on platforms where individuals gather, like **Instagram, Facebook, or Pinterest**. Use content that speaks directly to their personal needs and interests.",
-                        "local_network": "Host pop-up events or set up a booth at **local craft fairs or markets** to engage directly with individual consumers.",
-                        "referrals": "Offer a special incentive, like a **discount or a free bonus**, to clients who refer friends and family."
-                    },
-                    "small_business": {
-                        "online_network": "Focus your marketing on **solving common business problems**. Use case studies and testimonials from other small businesses to build trust.",
-                        "local_network": "Join **local chambers of commerce** and attend events to connect with other small business owners.",
-                        "referrals": "Create a referral program that rewards your clients for spreading the word. Focus on delivering **exceptional value** so they are excited to share your service."
-                    },
-                    "corporate": {
-                        "online_network": "Market through **professional channels**, like LinkedIn. Emphasize your ability to handle large projects and provide professional solutions.",
-                        "local_network": "Network with key decision-makers at **local corporate events** and industry conferences.",
-                        "referrals": "Reach out to past corporate clients and ask for testimonials or referrals to their professional network."
-                    }
+        const handleInput = (event, fieldId) => {
+            if (event.type === 'blur' || event.key === 'Enter') {
+                const inputElement = event.target;
+                const itemText = inputElement.value.trim();
+                
+                if (itemText && !profileData[fieldId].includes(itemText)) {
+                    profileData[fieldId].push(itemText);
+                    inputElement.value = '';
+                    renderList(fieldId);
                 }
             }
         };
 
-        // --- Core Functions ---
+        const removeItem = (fieldId, index) => {
+            profileData[fieldId].splice(index, 1);
+            renderList(fieldId);
+        };
 
-        function showScreen(screen) {
-            introScreen.classList.add('hidden');
-            professionScreen.classList.add('hidden');
-            questionsScreen.classList.add('hidden');
-            resultsScreen.classList.add('hidden');
-            screen.classList.remove('hidden');
-        }
-
-        function renderQuestion() {
-            progressIndicator.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-
-            if (currentQuestionIndex > 0) {
-                backButton.classList.remove('hidden');
-            } else {
-                backButton.classList.add('hidden');
-            }
-
-            const q = questions[currentQuestionIndex];
-            questionText.textContent = q.question;
-            optionsContainer.innerHTML = '';
-
-            q.options.forEach(option => {
-                const button = document.createElement('button');
-                button.classList.add('btn-option');
-                button.dataset.value = option.value;
-                button.innerHTML = `
-                    <div class="flex-grow">
-                        <span class="font-semibold text-lg block text-left">${option.text}</span>
-                        <span class="text-sm text-gray-500 mt-1 block text-left">${option.description}</span>
-                    </div>
-                    <svg class="h-6 w-6 text-white ml-4 check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
+        const renderList = (fieldId) => {
+            const listElement = document.getElementById(`${fieldId}-list`);
+            listElement.innerHTML = '';
+            profileData[fieldId].forEach((item, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item}</span>
+                    <button onclick="removeItem('${fieldId}', ${index})" class="text-red-500 hover:text-red-700 font-bold ml-2">
+                        &times;
+                    </button>
                 `;
-                
-                const checkmark = button.querySelector('.check-icon');
-                if (userAnswers[currentQuestionIndex] === option.value) {
-                    button.classList.add('selected');
-                    const spans = button.querySelectorAll('span');
-                    spans[1].classList.remove('text-gray-500');
-                    spans[1].classList.add('text-white');
-                    checkmark.classList.remove('hidden');
-                } else {
-                    checkmark.classList.add('hidden');
-                }
-
-                button.addEventListener('click', () => {
-                    optionsContainer.querySelectorAll('.btn-option').forEach(btn => {
-                        btn.classList.remove('selected');
-                        const spans = btn.querySelectorAll('span');
-                        spans[1].classList.remove('text-white');
-                        spans[1].classList.add('text-gray-500');
-                        btn.querySelector('.check-icon').classList.add('hidden');
-                    });
-                    
-                    button.classList.add('selected');
-                    const selectedSpans = button.querySelectorAll('span');
-                    selectedSpans[1].classList.remove('text-gray-500');
-                    selectedSpans[1].classList.add('text-white');
-                    checkmark.classList.remove('hidden');
-
-                    userAnswers[currentQuestionIndex] = option.value;
-                    
-                    setTimeout(() => {
-                        if (currentQuestionIndex < questions.length - 1) {
-                            currentQuestionIndex++;
-                            renderQuestion();
-                        } else {
-                            showResults();
-                        }
-                    }, 300); // Small delay for visual feedback
-                });
-                optionsContainer.appendChild(button);
+                listElement.appendChild(li);
             });
-        }
+        };
 
-        function showResults() {
-            // Basic error handling to ensure all questions were answered
-            if (!userAnswers || userAnswers.length !== questions.length) {
-                profileOutput.innerHTML = `
-                    <div class="text-center text-red-500 font-bold">
-                        <p>Oops! It looks like you missed a question. Please go back and try again.</p>
-                    </div>
-                `;
+        const getIdeas = (fieldId) => {
+            const ideasContainer = document.getElementById(`${fieldId}-ideas-container`);
+            
+            // If the container is already visible, hide it.
+            if (!ideasContainer.classList.contains('hidden')) {
+                ideasContainer.classList.add('hidden');
                 return;
             }
 
-            const professionKey = userProfession.toLowerCase().replace(' ', '_');
+            // Otherwise, show the container and populate it with ideas.
+            ideasContainer.classList.remove('hidden');
+            ideasContainer.innerHTML = '';
             
-            // Retrieve the user's answers
-            const specialty = userAnswers[0];
-            const secondAnswer = userAnswers[1];
-            const thirdAnswer = userAnswers[2];
-            const fourthAnswer = userAnswers[3];
-            
-            let clientProfile = '';
-            let tipSection = '';
-
-            // Handle the different professions
-            if (userProfession === 'Esthetician' || userProfession === 'Massage Therapist') {
-                const clientTypes = {
-                    esthetician: {
-                        acne: "The client with persistent acne, seeking professional guidance and specialized treatments to achieve clear skin.",
-                        anti_aging: "The client focused on preventative and corrective treatments for aging, valuing high-tech solutions and results.",
-                        holistic: "The client who prefers natural, clean beauty products and services, valuing a holistic approach to skin health."
-                    },
-                    massage_therapist: {
-                        deep_tissue: "The client with chronic muscle tension or pain, seeking therapeutic and deep tissue work to find relief.",
-                        relaxation: "The client seeking stress reduction and pure relaxation, valuing a calming environment and gentle touch.",
-                        specialized: "The client with specific needs, such as a pregnant mother or an athlete, who requires targeted, expert care."
-                    }
-                };
-                const ageRanges = {
-                    "young adult": "Young professionals, often digitally savvy and active on social media. They are seeking treatments that are both affordable and trendy.",
-                    "middle aged": "Career-focused individuals and parents who have limited time but have disposable income. They are looking for effective, reliable services that provide real results and stress relief.",
-                    "mature adult": "Established clients with time for self-care and a focus on long-term wellness and anti-aging. They value quality, trust, and a personal connection with their provider."
-                };
-                const onlinePresence = {
-                    "social media": "You can find your clients on Instagram and TikTok.",
-                    "online community": "Your clients are active in wellness blogs and forums.",
-                    "visual platforms": "Your clients are on YouTube and Pinterest.",
-                    "local community": "Your clients are active in local Facebook groups and community forums.",
-                    "professional network": "Your clients are on platforms like LinkedIn."
-                };
-                const painPoints = {
-                    "skin condition": "Your clients have skin concerns like acne or rosacea.",
-                    "aging": "Your clients want to address fine lines and wrinkles.",
-                    "stress": "Your clients are stressed and overwhelmed.",
-                    "pain": "Your clients suffer from chronic pain.",
-                    "recovery": "Your clients are athletes or active individuals."
-                };
-
-                // Get the text for the age range option
-                const ageOption = questions[1].options.find(opt => opt.value === secondAnswer);
-                const ageRangeText = ageOption ? ageOption.text : 'undefined';
-
-                clientProfile = `
-                    <p><strong>Your Profession:</strong> ${userProfession}</p>
-                    <p><strong>Client Profile:</strong> ${clientTypes[professionKey][specialty]}</p>
-                    <p><strong>Ideal Age Range:</strong> ${ageRangeText}. ${ageRanges[secondAnswer]}</p>
-                    <p><strong>Where to Find Them:</strong> ${onlinePresence[thirdAnswer]}</p>
-                    <p><strong>Problem You're Solving:</strong> ${painPoints[fourthAnswer]}</p>
-                `;
-
-                // Add the tips
-                tipSection = `
-                    <h3 class="font-bold mt-6">What to Do Next</h3>
-                    <ul class="list-disc pl-5">
-                        <li class="mb-2">${tips[professionKey][specialty]}</li>
-                        <li class="mb-2">${tips[professionKey][secondAnswer][thirdAnswer]}</li>
-                        <li class="mb-2">Your messaging should focus on: "${painPoints[fourthAnswer]}"</li>
-                    </ul>
-                `;
-
-            } else { // Handle 'Other' profession
-                const clientTypesOther = {
-                    "coaching_consulting": "You serve a client seeking expert guidance or a professional solution.",
-                    "creative_arts": "You serve a client who needs an artistic or unique creative work.",
-                    "digital_products": "You serve a client who needs to learn a new skill or solve a specific problem with a digital tool."
-                };
-                const otherDemographics = {
-                    "individual": "Your ideal client is an individual consumer or a hobbyist.",
-                    "small_business": "Your ideal client is a small business owner or entrepreneur.",
-                    "corporate": "You provide services to established companies and their teams."
-                };
-                const otherPainPoints = {
-                    "efficiency": "Your clients are looking to save time or money.",
-                    "expertise": "You provide knowledge or a solution they cannot find themselves."
-                };
-                const otherOnlinePresence = {
-                    "online_network": "You can find your clients on professional networks and forums.",
-                    "local_network": "Your clients are in your local area.",
-                    "referrals": "Your clients primarily come from word-of-mouth."
-                };
-                
-                const serviceTip = tips.other.serviceType[specialty];
-                const marketingTip = tips.other.discoveryChannels[secondAnswer][fourthAnswer];
-
-                clientProfile = `
-                    <p><strong>Your Profession:</strong> ${userProfession}</p>
-                    <p><strong>Client Profile:</strong> ${clientTypesOther[specialty]}</p>
-                    <p><strong>Ideal Client Demographic:</strong> ${otherDemographics[secondAnswer]}</p>
-                    <p><strong>Problem You're Solving:</strong> ${otherPainPoints[thirdAnswer]}</p>
-                    <p><strong>Where to Find Them:</strong> ${otherOnlinePresence[fourthAnswer]}</p>
-                `;
-
-                tipSection = `
-                    <h3 class="font-bold mt-6">What to Do Next</h3>
-                    <ul class="list-disc pl-5">
-                        <li class="mb-2">${serviceTip}</li>
-                        <li class="mb-2">${marketingTip}</li>
-                        <li class="mb-2">Your marketing messages should highlight your ability to solve your client's need for: "${otherPainPoints[thirdAnswer]}"</li>
-                    </ul>
-                `;
-            }
-
-            profileOutput.innerHTML = clientProfile + tipSection;
-            showScreen(resultsScreen);
-        }
-        
-        // --- Event Listeners ---
-        
-        startButton.addEventListener('click', () => {
-            showScreen(professionScreen);
-        });
-
-        estheticianButton.addEventListener('click', () => {
-            userProfession = 'Esthetician';
-            questions = estheticianQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        massageTherapistButton.addEventListener('click', () => {
-            userProfession = 'Massage Therapist';
-            questions = massageTherapistQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        otherButton.addEventListener('click', () => {
-            userProfession = 'Other';
-            questions = otherQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        backButton.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                renderQuestion();
-            } else {
-                 showScreen(professionScreen);
-            }
-        });
-
-        restartButton.addEventListener('click', () => {
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(introScreen);
-        });
-    </script>
-</body>
-</html>
-
-
-
-            const q = questions[currentQuestionIndex];
-            questionText.textContent = q.question;
-            optionsContainer.innerHTML = '';
-
-            q.options.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option.text;
-                button.classList.add('btn-option');
-                button.dataset.value = option.value;
-                
-                if (userAnswers[currentQuestionIndex] === option.value) {
-                    button.classList.add('selected');
-                }
-
-                button.addEventListener('click', () => {
-                    optionsContainer.querySelectorAll('.btn-option').forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    userAnswers[currentQuestionIndex] = option.value;
+            const ideas = predefinedIdeas[fieldId];
+            if (ideas) {
+                ideas.forEach(item => {
+                    const ideaDiv = document.createElement('div');
+                    ideaDiv.classList.add('card-option', 'bg-gray-100', 'p-3', 'rounded-lg', 'border', 'border-gray-200', 'text-center', 'text-sm');
+                    ideaDiv.textContent = item;
                     
-                    setTimeout(() => {
-                        if (currentQuestionIndex < questions.length - 1) {
-                            currentQuestionIndex++;
-                            renderQuestion();
-                        } else {
-                            showResults();
-                        }
-                    }, 300); // Small delay for visual feedback
-                });
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        function showResults() {
-            const professionKey = userProfession.toLowerCase().replace(' ', '_');
-            
-            // Retrieve the user's answers
-            const specialty = userAnswers[0];
-            const secondAnswer = userAnswers[1];
-            const thirdAnswer = userAnswers[2];
-            const fourthAnswer = userAnswers[3];
-            
-            let clientProfile = '';
-            let tipSection = '';
-
-            // Handle the different professions
-            if (userProfession === 'Esthetician' || userProfession === 'Massage Therapist') {
-                const clientTypes = {
-                    esthetician: {
-                        acne: "The client with persistent acne, seeking professional guidance and specialized treatments to achieve clear skin.",
-                        anti_aging: "The client focused on preventative and corrective treatments for aging, valuing high-tech solutions and results.",
-                        holistic: "The client who prefers natural, clean beauty products and services, valuing a holistic approach to skin health."
-                    },
-                    massage_therapist: {
-                        deep_tissue: "The client with chronic muscle tension or pain, seeking therapeutic and deep tissue work to find relief.",
-                        relaxation: "The client seeking stress reduction and pure relaxation, valuing a calming environment and gentle touch.",
-                        specialized: "The client with specific needs, such as a pregnant mother or an athlete, who requires targeted, expert care."
+                    // Add selected class if the item is already in the profileData
+                    if (profileData[fieldId].includes(item)) {
+                        ideaDiv.classList.add('selected');
                     }
-                };
-                const ageRanges = {
-                    "young adult": "Young professionals, often digitally savvy and active on social media. They are seeking treatments that are both affordable and trendy.",
-                    "middle aged": "Career-focused individuals and parents who have limited time but have disposable income. They are looking for effective, reliable services that provide real results and stress relief.",
-                    "mature adult": "Established clients with time for self-care and a focus on long-term wellness and anti-aging. They value quality, trust, and a personal connection with their provider."
-                };
-                const onlinePresence = {
-                    "social media": "You can find your clients on Instagram and TikTok.",
-                    "online community": "Your clients are active in wellness blogs and forums.",
-                    "visual platforms": "Your clients are on YouTube and Pinterest.",
-                    "local community": "Your clients are active in local Facebook groups and community forums.",
-                    "professional network": "Your clients are on platforms like LinkedIn."
-                };
-                const painPoints = {
-                    "skin condition": "Your clients have skin concerns like acne or rosacea.",
-                    "aging": "Your clients want to address fine lines and wrinkles.",
-                    "stress": "Your clients are stressed and overwhelmed.",
-                    "pain": "Your clients suffer from chronic pain.",
-                    "recovery": "Your clients are athletes or active individuals."
-                };
 
-                // Get the text for the age range option
-                const ageOption = questions[1].options.find(opt => opt.value === secondAnswer);
-                const ageRangeText = ageOption ? ageOption.text : 'undefined';
+                    ideaDiv.onclick = () => {
+                        const index = profileData[fieldId].indexOf(item);
+                        if (index > -1) {
+                            profileData[fieldId].splice(index, 1);
+                            ideaDiv.classList.remove('selected');
+                        } else {
+                            profileData[fieldId].push(item);
+                            ideaDiv.classList.add('selected');
+                        }
+                        renderList(fieldId);
+                    };
+                    ideasContainer.appendChild(ideaDiv);
+                });
+            }
+        };
 
-                clientProfile = `
-                    <p><strong>Your Profession:</strong> ${userProfession}</p>
-                    <p><strong>Client Profile:</strong> ${clientTypes[professionKey][specialty]}</p>
-                    <p><strong>Ideal Age Range:</strong> ${ageRangeText}. ${ageRanges[secondAnswer]}</p>
-                    <p><strong>Where to Find Them:</strong> ${onlinePresence[thirdAnswer]}</p>
-                    <p><strong>Problem You're Solving:</strong> ${painPoints[fourthAnswer]}</p>
-                `;
+        const generateProfile = () => {
+            const outputDiv = document.getElementById('profile-output');
+            outputDiv.innerHTML = '';
 
-                // Add the tips
-                tipSection = `
-                    <h3 class="font-bold mt-6">What to Do Next</h3>
-                    <ul class="list-disc pl-5">
-                        <li class="mb-2">${tips[professionKey][specialty]}</li>
-                        <li class="mb-2">${tips[professionKey][secondAnswer][thirdAnswer]}</li>
-                        <li class="mb-2">Your messaging should focus on: "${painPoints[fourthAnswer]}"</li>
-                    </ul>
-                `;
-
-            } else { // Handle 'Other' profession
-                const clientTypesOther = {
-                    "physical service": "You serve a hands-on or direct service-based client.",
-                    "informational service": "You serve a client seeking knowledge and expertise.",
-                    "creative service": "You serve a client who needs a visual or creative solution."
-                };
-                const otherDemographics = {
-                    "individual": "Your ideal client is an individual consumer or a hobbyist.",
-                    "small business": "Your ideal client is a small business owner or entrepreneur.",
-                    "corporate": "Your ideal client is a large organization."
-                };
-                const otherPainPoints = {
-                    "efficiency": "Your clients are looking to save time or money. ",
-                    "expertise": "Your clients are looking for a specific skill they lack.",
-                    "creative": "Your clients need an artistic or original solution."
-                };
-                const otherOnlinePresence = {
-                    "online network": "You can find your clients on professional networks like LinkedIn or niche forums.",
-                    "local network": "Your clients are in your local area. ",
-                    "referrals": "Your clients primarily come from word-of-mouth."
-                };
+            const createSection = (title, dataArray, icon) => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.classList.add('space-y-2');
                 
-                const serviceTip = tips.other.serviceType[specialty];
-                const marketingTip = tips.other.findingClients[secondAnswer][fourthAnswer];
+                const titleDiv = document.createElement('div');
+                titleDiv.classList.add('flex', 'items-center', 'font-bold', 'text-lg', 'mb-2', 'text-gray-800');
+                titleDiv.innerHTML = `${icon} <span class="ml-2">${title}</span>`;
+                sectionDiv.appendChild(titleDiv);
 
-                clientProfile = `
-                    <p><strong>Your Profession:</strong> ${userProfession}</p>
-                    <p><strong>Client Profile:</strong> ${clientTypesOther[specialty]}</p>
-                    <p><strong>Ideal Client Demographic:</strong> ${otherDemographics[secondAnswer]}</p>
-                    <p><strong>Problem You're Solving:</strong> ${otherPainPoints[thirdAnswer]}</p>
-                    <p><strong>Where to Find Them:</strong> ${otherOnlinePresence[fourthAnswer]}</p>
-                `;
+                if (dataArray && dataArray.length > 0) {
+                    const list = document.createElement('ul');
+                    list.classList.add('list-inside', 'list-disc', 'space-y-1', 'text-sm', 'text-gray-600');
+                    dataArray.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = item;
+                        list.appendChild(listItem);
+                    });
+                    sectionDiv.appendChild(list);
+                } else {
+                    const noData = document.createElement('p');
+                    noData.classList.add('text-sm', 'italic', 'text-gray-400');
+                    noData.textContent = 'No data entered for this section.';
+                    sectionDiv.appendChild(noData);
+                }
+                outputDiv.appendChild(sectionDiv);
+            };
 
-                tipSection = `
-                    <h3 class="font-bold mt-6">What to Do Next</h3>
-                    <ul class="list-disc pl-5">
-                        <li class="mb-2">${serviceTip}</li>
-                        <li class="mb-2">${marketingTip}</li>
-                        <li class="mb-2">Your marketing messages should highlight your ability to solve your client's need for: "${otherPainPoints[thirdAnswer]}"</li>
-                    </ul>
-                `;
-            }
+            // Demographics section
+            const demoSectionDiv = document.createElement('div');
+            demoSectionDiv.classList.add('space-y-2');
+            const demoTitleDiv = document.createElement('div');
+            demoTitleDiv.classList.add('flex', 'items-center', 'font-bold', 'text-lg', 'mb-2', 'text-gray-800');
+            demoTitleDiv.innerHTML = `${icons.demographics} <span class="ml-2">Who are you going to serve?</span>`;
+            demoSectionDiv.appendChild(demoTitleDiv);
 
-            profileOutput.innerHTML = clientProfile + tipSection;
-            showScreen(resultsScreen);
-        }
-        
-        // --- Event Listeners ---
-        
-        startButton.addEventListener('click', () => {
-            showScreen(professionScreen);
-        });
-
-        estheticianButton.addEventListener('click', () => {
-            userProfession = 'Esthetician';
-            questions = estheticianQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        massageTherapistButton.addEventListener('click', () => {
-            userProfession = 'Massage Therapist';
-            questions = massageTherapistQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        otherButton.addEventListener('click', () => {
-            userProfession = 'Other';
-            questions = otherQuestions;
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(questionsScreen);
-            renderQuestion();
-        });
-
-        backButton.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                renderQuestion();
+            const ageList = document.createElement('ul');
+            ageList.classList.add('list-inside', 'list-disc', 'space-y-1', 'text-sm', 'text-gray-600');
+            const ageTitle = document.createElement('li');
+            ageTitle.classList.add('font-medium', 'text-gray-800');
+            ageTitle.textContent = 'Age Range:';
+            ageList.appendChild(ageTitle);
+            if (profileData["demographics-age"] && profileData["demographics-age"].length > 0) {
+                profileData["demographics-age"].forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    ageList.appendChild(li);
+                });
             } else {
-                 showScreen(professionScreen);
+                const li = document.createElement('li');
+                li.classList.add('italic', 'text-gray-400');
+                li.textContent = 'No data entered.';
+                ageList.appendChild(li);
             }
-        });
+            demoSectionDiv.appendChild(ageList);
 
-        restartButton.addEventListener('click', () => {
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            showScreen(introScreen);
-        });
+            const locationList = document.createElement('ul');
+            locationList.classList.add('list-inside', 'list-disc', 'space-y-1', 'text-sm', 'text-gray-600');
+            const locationTitle = document.createElement('li');
+            locationTitle.classList.add('font-medium', 'text-gray-800');
+            locationTitle.textContent = 'Location:';
+            locationList.appendChild(locationTitle);
+            if (profileData["demographics-location"] && profileData["demographics-location"].length > 0) {
+                profileData["demographics-location"].forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    locationList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.classList.add('italic', 'text-gray-400');
+                li.textContent = 'No data entered.';
+                locationList.appendChild(li);
+            }
+            demoSectionDiv.appendChild(locationList);
+            outputDiv.appendChild(demoSectionDiv);
+
+            // Other sections
+            createSection('What do they like to do?', profileData.lifestyle, icons.lifestyle);
+            createSection('What problems are they facing?', profileData["pain-points"], icons.painPoints);
+            createSection('What do they hope to achieve?', profileData.goals, icons.goals);
+            createSection('Where can you reach them?', profileData["info-sources"], icons.infoSources);
+
+            document.getElementById('generated-profile').classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        };
+
+        const saveProfile = () => {
+            const statusDiv = document.getElementById('status-message');
+            const finalProfile = document.getElementById('profile-output').innerHTML.trim();
+            const textToSave = document.getElementById('profile-output').innerText.trim();
+
+
+            if (!textToSave) {
+                statusDiv.textContent = 'Please generate a profile to save.';
+                statusDiv.className = 'text-center mt-4 text-red-500';
+                return;
+            }
+
+            try {
+                localStorage.setItem('savedTargetProfile', textToSave);
+                statusDiv.textContent = 'Your profile has been saved successfully!';
+                statusDiv.className = 'text-center mt-4 text-green-500';
+                loadSavedProfile();
+            } catch (error) {
+                console.error("Error saving profile:", error);
+                statusDiv.textContent = 'There was an error saving your profile.';
+                statusDiv.className = 'text-center mt-4 text-red-500';
+            }
+        };
+
+        const loadSavedProfile = () => {
+            const savedProfile = localStorage.getItem('savedTargetProfile');
+            const savedSection = document.getElementById('saved-profile-section');
+            const savedText = document.getElementById('saved-profile-text');
+
+            if (savedProfile) {
+                savedText.textContent = savedProfile;
+                savedSection.classList.remove('hidden');
+            } else {
+                savedSection.classList.add('hidden');
+            }
+        };
+
+        const clearSavedProfile = () => {
+            localStorage.removeItem('savedTargetProfile');
+            loadSavedProfile();
+            document.getElementById('status-message').textContent = 'Saved profile cleared.';
+            document.getElementById('status-message').className = 'text-center mt-4 text-gray-500';
+        };
+
+        window.onload = () => {
+            loadSavedProfile();
+        };
+
+        window.toggleDemographicItem = toggleDemographicItem;
+        window.toggleOtherInput = toggleOtherInput;
+        window.handleInput = handleInput;
+        window.removeItem = removeItem;
+        window.generateProfile = generateProfile;
+        window.saveProfile = saveProfile;
+        window.clearSavedProfile = clearSavedProfile;
+        window.getIdeas = getIdeas;
     </script>
 </body>
 </html>
+
