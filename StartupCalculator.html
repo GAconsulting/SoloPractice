@@ -1,170 +1,373 @@
-<p>Business start up calculator</p>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title>
+<title>Solo Practitioner Business Plan</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" />
 <style type="text/css">@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .container {
-            max-width: 900px;
-        }
-        .input-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .input-group label {
-            min-width: 150px;
-        }
-        .input-group input {
-            flex-grow: 1;
-        }
-        .section-header {
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .icon {
-            color: #6b7280;
-            margin-right: 0.5rem;
-            width: 24px;
-            text-align: center;
-        }
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-primary {
+            @apply bg-blue-600 text-white font-medium rounded-full py-3 px-6 hover:bg-blue-700 transition duration-300 ease-in-out;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 text-gray-800 font-medium rounded-full py-3 px-6 hover:bg-gray-300 transition duration-300 ease-in-out;
+        }
+        .option-btn {
+            @apply w-full text-left py-4 px-6 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition duration-300 ease-in-out;
+        }
+        .option-btn.selected {
+            @apply bg-blue-50 border-blue-600 text-blue-600;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
 </style>
-<div class="container mx-auto bg-white shadow-xl rounded-2xl p-8 sm:p-12">
-<div class="text-center mb-10">
-<h1 class="text-4xl font-bold text-gray-800 mb-2">Solo Practitioner Startup Calculator</h1>
+<div class="container mx-auto p-4 sm:p-8"><div class="card text-center fade-in" id="intro-screen">
+<img src="https://i.imgur.com/K1I0s0D.png" alt="Solo Practice Logo" class="mx-auto mb-6 w-32 h-32">
+<h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 mb-4">Solo Practitioner Business Plan</h1>
 
-<p class="text-gray-500">Estimate your one-time and recurring business expenses.</p>
-</div>
+<p class="text-lg text-gray-600 mb-8">Create a simple business plan to guide your solo practice.</p>
+<button class="btn-primary" id="start-button">Start</button></div>
+<div class="hidden fade-in" id="questions-screen">
+<div class="card space-y-6 text-left">
+<p class="text-sm font-medium text-gray-500 text-center mb-2" id="progress-indicator">&nbsp;</p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><!-- One-Time Costs Section -->
-<div>
-<h2 class="text-2xl font-bold text-gray-700 section-header flex items-center mb-4">One-Time Costs</h2>
+<p class="text-xl font-semibold text-gray-800" id="question-text">&nbsp;</p>
+<input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="answer-input" placeholder="Type your answer here..." type="text" /><textarea class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 hidden" id="answer-textarea" placeholder="Type your answer here..."></textarea>
 
-<div class="space-y-4">
-<div class="input-group"><label class="text-gray-700" for="licensing">Licensing &amp; Certifications</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="licensing" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Costs for your professional license, initial certifications, and business registration.</span> </span></div>
+<div class="space-y-4" id="options-container">&nbsp;</div>
 
-<div class="input-group"><label class="text-gray-700" for="setup">Treatment Room Setup</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="setup" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Initial investment in a massage table, facial steamer, decor, and other essential equipment.</span> </span></div>
+<div class="text-red-500 text-sm mt-2 hidden" id="error-message">&nbsp;</div>
 
-<div class="input-group"><label class="text-gray-700" for="supplies">Initial Product &amp; Supply Stock</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="supplies" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">The first purchase of professional products, lotions, oils, and disposable supplies.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="marketing">Marketing &amp; Branding</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="marketing" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Costs for logo design, business cards, social media profiles, and your initial website.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="website">Website &amp; Booking System</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="website" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Costs to create a website and set up an online booking system for appointments.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="miscOneTime">Miscellaneous</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="miscOneTime" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Any other unforeseen one-time costs, like initial legal fees.</span> </span></div>
+<div class="flex justify-between mt-6"><button class="btn-secondary hidden" id="back-button">Back</button><button class="btn-primary ml-auto" id="next-button">Next</button></div>
 </div>
 </div>
-<!-- Monthly Operating Costs Section -->
+<div class="hidden fade-in" id="results-screen">
+<div class="card space-y-6">
+<h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">Your Business Plan</h2>
 
-<div>
-<h2 class="text-2xl font-bold text-gray-700 section-header flex items-center mb-4">Monthly Costs</h2>
-
-<div class="space-y-4">
-<div class="input-group"><label class="text-gray-700" for="rent">Studio/Room Rental</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="rent" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Monthly rent for your private studio, room, or chair rental.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="utilities">Utilities &amp; Internet</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="utilities" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Monthly costs for electricity, water, and internet bills.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="suppliesMonthly">Supplies &amp; Products</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="suppliesMonthly" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Ongoing costs for restocking your supplies and retail products.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="insurance">Insurance</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="insurance" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Monthly cost of business liability and professional insurance policies.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="development">Professional Development</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="development" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Fees for advanced training, workshops, and continuing education.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="miscMonthly">Miscellaneous</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="miscMonthly" type="number" value="0" /> <span class="tooltip"> <span class="tooltiptext">Any other unforeseen monthly costs.</span> </span></div>
-
-<div class="input-group"><label class="text-gray-700" for="months">Months to Fund</label> <input class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" id="months" type="number" value="3" /> <span class="tooltip"> <span class="tooltiptext">The number of months you need to cover expenses before becoming profitable.</span> </span></div>
-</div>
-</div>
-</div>
-<!-- Results Section -->
-
-<div class="mt-10 p-6 bg-blue-50 rounded-2xl border border-blue-200">
-<h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">Your Estimated Startup Costs</h2>
-
-<div class="flex flex-col sm:flex-row justify-around items-center space-y-4 sm:space-y-0 text-center">
-<div class="flex flex-col items-center">
-<p class="text-xl text-gray-700 font-medium">Total One-Time Costs</p>
-
-<p class="text-3xl font-bold text-blue-600" id="oneTimeCost">$0</p>
-</div>
-
-<div class="flex flex-col items-center">
-<p class="text-xl text-gray-700 font-medium">Total Monthly Costs</p>
-
-<p class="text-3xl font-bold text-blue-600" id="monthlyCost">$0</p>
-</div>
-
-<div class="flex flex-col items-center">
-<p class="text-xl text-gray-700 font-medium">Total Startup Capital Needed</p>
-
-<p class="text-3xl font-bold text-blue-600" id="totalCost">$0</p>
-</div>
-</div>
+<div class="prose max-w-none leading-relaxed" id="business-plan-content">&nbsp;</div>
+<button class="btn-secondary mt-6 w-full" id="restart-button">Start Over</button></div>
 </div>
 </div>
 <script>
-        const inputs = document.querySelectorAll('input[type="number"]');
-        const oneTimeCostElem = document.getElementById('oneTimeCost');
-        const monthlyCostElem = document.getElementById('monthlyCost');
-        const totalCostElem = document.getElementById('totalCost');
+        const introScreen = document.getElementById('intro-screen');
+        const questionsScreen = document.getElementById('questions-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startButton = document.getElementById('start-button');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const questionText = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const answerTextarea = document.getElementById('answer-textarea');
+        const optionsContainer = document.getElementById('options-container');
+        const backButton = document.getElementById('back-button');
+        const nextButton = document.getElementById('next-button');
+        const businessPlanContent = document.getElementById('business-plan-content');
+        const restartButton = document.getElementById('restart-button');
+        const errorMessage = document.getElementById('error-message');
 
-        function calculateCosts() {
-            const oneTimeCosts = ['licensing', 'setup', 'supplies', 'marketing', 'website', 'miscOneTime'];
-            const monthlyCosts = ['rent', 'utilities', 'suppliesMonthly', 'insurance', 'development', 'miscMonthly'];
-            const monthsToFund = parseFloat(document.getElementById('months').value) || 0;
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
 
-            let totalOneTime = 0;
-            oneTimeCosts.forEach(id => {
-                totalOneTime += parseFloat(document.getElementById(id).value) || 0;
-            });
+        const questions = [
+            { id: 'businessName', text: 'What is the name of your business?' },
+            { id: 'missionStatement', text: 'What is your mission statement? (e.g., To provide high-quality facial treatments that leave clients feeling confident and radiant.)', type: 'textarea' },
+            { id: 'idealAge', text: 'What is the age range of your ideal client? (e.g., 30-45)' },
+            { id: 'idealIncome', text: 'What is the income level of your ideal client?' },
+            { id: 'idealProblem', text: 'What specific problem or need does your service solve for them? (e.g., Chronic back pain, acne, fine lines and wrinkles)' },
+            { id: 'services', text: 'What services will you offer? (e.g., Swedish massage, deep tissue massage, microdermabrasion, chemical peels)', type: 'textarea' },
+            { id: 'clientHabits', text: 'Where can you find your ideal client? (e.g., On Instagram, at the local gym, in community groups)' },
+            { id: 'socialMedia', text: 'What social media platforms will you use for your business? (e.g., Instagram, Facebook, TikTok)' },
+            { id: 'clientSocialMedia', text: 'Where do you think your ideal clients are spending their time online? (e.g., Are they on Instagram, Facebook, Reddit, or elsewhere?)' },
+            { id: 'websiteStrategy', text: 'What is your website strategy? Will you hire someone, use a DIY service like Squarespace or Wix, or not have one at all?' },
+            { id: 'emailMarketing', text: 'How will you build and use an email list? (e.g., newsletter, special offers, booking reminders)'},
+            { id: 'localMarketing', text: 'What is your local marketing strategy? (e.g., flyers, partnerships with local businesses, networking)' },
+            { id: 'referralStrategy', text: 'What is your client referral strategy? (e.g., loyalty program, referral bonus)' },
+            { id: 'pricing', text: 'What is your pricing model? Please check all that apply.', type: 'checkboxes', options: ['Hourly Rate', 'Package Deals', 'Membership', 'Tiered Services', 'Other'] },
+            { id: 'financialGoals', text: 'What are your financial goals for the first year? (e.g., in dollars)' }
+        ];
 
-            let totalMonthly = 0;
-            monthlyCosts.forEach(id => {
-                totalMonthly += parseFloat(document.getElementById(id).value) || 0;
-            });
+        function formatCurrency(amount) {
+            const number = parseFloat(amount.replace(/[$,]/g, ''));
+            if (isNaN(number)) {
+                return amount;
+            }
+            return `$${number.toLocaleString()}`;
+        }
 
-            const totalStartupCapital = totalOneTime + (totalMonthly * monthsToFund);
+        function showScreen(screen) {
+            introScreen.classList.add('hidden');
+            questionsScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            screen.classList.remove('hidden');
+        }
 
-            oneTimeCostElem.textContent = `$${totalOneTime.toLocaleString()}`;
-            monthlyCostElem.textContent = `$${totalMonthly.toLocaleString()}`;
-            totalCostElem.textContent = `$${totalStartupCapital.toLocaleString()}`;
-        }
+        function renderQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResults();
+                return;
+            }
 
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateCosts);
-        });
+            const q = questions[currentQuestionIndex];
+            progressIndicator.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            questionText.textContent = q.text;
+            backButton.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next';
 
-        // Initial calculation on page load
-        calculateCosts();
-    </script>
+            // Hide all input types first
+            answerInput.classList.add('hidden');
+            answerTextarea.classList.add('hidden');
+            optionsContainer.classList.add('hidden');
+            optionsContainer.innerHTML = '';
+            errorMessage.classList.add('hidden');
+
+            if (q.type === 'textarea') {
+                answerTextarea.value = userAnswers[q.id] || '';
+                answerTextarea.classList.remove('hidden');
+            } else if (q.type === 'options') {
+                optionsContainer.classList.remove('hidden');
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = `option-btn ${userAnswers[q.id] === option ? 'selected' : ''}`;
+                    button.addEventListener('click', () => {
+                        userAnswers[q.id] = option;
+                        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                        button.classList.add('selected');
+                    });
+                    optionsContainer.appendChild(button);
+                });
+            } else if (q.type === 'checkboxes') {
+                optionsContainer.classList.remove('hidden');
+                if (!userAnswers[q.id]) {
+                    userAnswers[q.id] = [];
+                }
+                q.options.forEach(option => {
+                    const label = document.createElement('label');
+                    label.className = "flex items-center space-x-3";
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = option;
+                    checkbox.className = 'form-checkbox h-5 w-5 text-blue-600 rounded';
+                    checkbox.checked = userAnswers[q.id].includes(option);
+
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            if (!userAnswers[q.id].includes(option)) {
+                                userAnswers[q.id].push(option);
+                            }
+                        } else {
+                            userAnswers[q.id] = userAnswers[q.id].filter(item => item !== option);
+                        }
+
+                        if (option === 'Other') {
+                            const otherInput = document.getElementById('other-input');
+                            if (checkbox.checked) {
+                                if (!otherInput) {
+                                    const newOtherInput = document.createElement('input');
+                                    newOtherInput.type = 'text';
+                                    newOtherInput.id = 'other-input';
+                                    newOtherInput.className = 'w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-blue-500 focus:border-blue-500';
+                                    newOtherInput.placeholder = 'Please specify...';
+                                    newOtherInput.value = userAnswers.otherPricing || '';
+                                    newOtherInput.addEventListener('input', (e) => {
+                                        userAnswers.otherPricing = e.target.value;
+                                    });
+                                    optionsContainer.appendChild(newOtherInput);
+                                }
+                            } else {
+                                if (otherInput) {
+                                    otherInput.remove();
+                                    delete userAnswers.otherPricing;
+                                }
+                            }
+                        }
+                    });
+
+                    const span = document.createElement('span');
+                    span.textContent = option;
+                    span.className = "text-gray-700 text-lg";
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    optionsContainer.appendChild(label);
+                });
+                if (userAnswers[q.id].includes('Other') && userAnswers.otherPricing !== undefined) {
+                    const newOtherInput = document.createElement('input');
+                    newOtherInput.type = 'text';
+                    newOtherInput.id = 'other-input';
+                    newOtherInput.className = 'w-full border border-gray-300 rounded-lg p-3 mt-2 focus:ring-blue-500 focus:border-blue-500';
+                    newOtherInput.placeholder = 'Please specify...';
+                    newOtherInput.value = userAnswers.otherPricing || '';
+                    newOtherInput.addEventListener('input', (e) => {
+                        userAnswers.otherPricing = e.target.value;
+                    });
+                    optionsContainer.appendChild(newOtherInput);
+                }
+            } else {
+                answerInput.value = userAnswers[q.id] || '';
+                answerInput.classList.remove('hidden');
+                answerInput.placeholder = q.id === 'idealIncome' || q.id === 'financialGoals' ? 'e.g., 50,000' : 'Type your answer here...';
+                
+                answerInput.removeEventListener('input', handleCurrencyInput);
+                if (q.id === 'idealIncome' || q.id === 'financialGoals') {
+                    answerInput.addEventListener('input', handleCurrencyInput);
+                }
+            }
+        }
+
+        function handleCurrencyInput(e) {
+            const value = e.target.value.replace(/[$,]/g, '');
+            const number = parseFloat(value);
+            if (!isNaN(number)) {
+                e.target.value = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(number);
+            }
+        }
+        
+        function validateAndSaveInput() {
+            const q = questions[currentQuestionIndex];
+            let value;
+
+            if (q.type === 'textarea') {
+                value = answerTextarea.value;
+            } else if (q.type === 'options' || q.type === 'checkboxes') {
+                value = userAnswers[q.id];
+            } else {
+                value = answerInput.value;
+            }
+            
+            if (!value || (Array.isArray(value) && value.length === 0)) {
+                errorMessage.textContent = 'Please provide an answer to continue.';
+                errorMessage.classList.remove('hidden');
+                return false;
+            }
+
+            if (q.id === 'idealIncome' || q.id === 'financialGoals') {
+                const number = parseFloat(value.replace(/[$,]/g, ''));
+                if (isNaN(number)) {
+                    errorMessage.textContent = 'Please enter a valid number.';
+                    errorMessage.classList.remove('hidden');
+                    return false;
+                }
+            }
+            
+            userAnswers[q.id] = value;
+            return true;
+        }
+
+        function showResults() {
+            const { businessName, missionStatement, idealAge, idealIncome, idealProblem, services, clientHabits, socialMedia, clientSocialMedia, websiteStrategy, emailMarketing, localMarketing, referralStrategy, pricing, otherPricing, financialGoals } = userAnswers;
+            
+            const formattedIncome = formatCurrency(idealIncome);
+            const formattedFinancialGoals = formatCurrency(financialGoals);
+            
+            let pricingOutput = pricing && pricing.length > 0 ? pricing.join(', ') : 'not specified';
+            if (otherPricing) {
+                if (pricingOutput !== 'not specified') {
+                    pricingOutput += `, ${otherPricing}`;
+                } else {
+                    pricingOutput = otherPricing;
+                }
+            }
+
+            businessPlanContent.innerHTML = `
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Business Overview</h3>
+                <p><strong>Business Name:</strong> ${businessName || 'Not specified'}</p>
+                <p>The mission of **${businessName || 'this business'}** is to **${missionStatement || 'provide a key service to its clients'}**.</p>
+                
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-2">Target Market</h3>
+                <p>The ideal client is in the **${idealAge || 'not specified'}** age range, with an income level of **${formattedIncome || 'not specified'}**. This business is uniquely positioned to solve the problem of **${idealProblem || 'not specified'}**.</p>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-2">Client Habits</h3>
+                <p>To connect with these clients, the business will focus on areas where they are most likely to be found, such as **${clientHabits || 'not specified'}**.</p>
+                
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-2">Services & Pricing</h3>
+                <p>The core services offered include: ${services || 'Not specified'}. The pricing model is structured as a **${pricingOutput}**.</p>
+                
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-2">Marketing & Financials</h3>
+                <p>The online marketing strategy will focus on **social media marketing** via **${socialMedia || 'not specified'}**. To reach the ideal client, the business will focus on **${clientSocialMedia || 'not specified'}**, with a website built using a **${websiteStrategy || 'not specified'}** approach, and an email list will be built to **${emailMarketing || 'not specified'}**. The local marketing strategy will focus on **${localMarketing || 'not specified'}**, and a referral strategy will be built around **${referralStrategy || 'not specified'}**.</p>
+                <p>The financial goal for the first year is set at **${formattedFinancialGoals || 'Not specified'}**.</p>
+                
+                <hr class="my-8">
+
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Pro Tips for Your Business</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>**Stay consistent with your brand.** Make sure your mission statement and values are reflected in all your marketing materials, from your social media posts to your website.</li>
+                    <li>**Track your financials.** Regularly review your financial goals to ensure you're on track. Consider a simple bookkeeping system to keep things organized.</li>
+                    <li>**Focus on high-quality referrals.** The best clients often come from satisfied clients. Make your referral strategy a priority to build a sustainable business.</li>
+                    <li>**Engage with your online community.** Don't just post on social media; respond to comments, ask questions, and be a part of the online conversation. This builds trust and loyalty.</li>
+                </ul>
+
+                <hr class="my-8">
+
+                <h3 class="text-xl font-bold text-gray-800 mb-2">More Pro Tips for Your Spa Business</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>**Create a Signature Experience.** Think about the atmosphere in your space. What details—from the scent to the music—make your clients feel relaxed and special?</li>
+                    <li>**Showcase Your Work.** Utilize social media platforms like Instagram and TikTok to share high-quality, professional before-and-after photos of your work (with client consent!). This is one of the most effective ways to attract new clients.</li>
+                    <li>**Implement an Online Booking System.** A reliable booking system saves you time and makes it easier for clients to schedule appointments, reducing no-shows and cancellations.</li>
+                    <li>**Get Insured.** Look into professional liability insurance to protect yourself and your business. It’s an essential part of a solid business plan for any service-based practitioner.</li>
+                    <li>**Consider Retail.** Think about selling products that complement your services, like essential oils, high-quality skincare, or massage tools. It's an easy way to boost your revenue and provide value to your clients.</li>
+                </ul>
+
+                <p class="text-sm text-gray-500 mt-8">
+                    *Disclaimer: This business plan is a template and should not be considered professional financial, legal, or business advice. Please consult with a qualified professional for guidance specific to your situation.
+                </p>
+            `;
+            showScreen(resultsScreen);
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', () => {
+            showScreen(questionsScreen);
+            renderQuestion();
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (validateAndSaveInput()) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        });
+
+        backButton.addEventListener('click', () => {
+            if (validateAndSaveInput()) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        });
+
+        restartButton.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            showScreen(introScreen);
+        });
+
+        // Initial render
+        renderQuestion();
+    </script>
+
